@@ -1,0 +1,5 @@
+{
+  "name": "CrossSpeciesComparisonLoader",
+  "version": "1",
+  "dependencies": [ "Points", "Cluster" ]
+}

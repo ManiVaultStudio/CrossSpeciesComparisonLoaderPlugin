@@ -1,0 +1,6 @@
+[
+    {"value1": "Human", "value2": "Chimpanzee", "cluster": "Cluster 1"},
+    {"value1": "Gorilla", "value2": "Cluster 1", "cluster": "Cluster 2"},
+    {"value1": "Rhesus", "value2": "Cluster 2", "cluster": "Cluster 3"},
+	 {"value1": "Marmoset", "value2": "Cluster 3", "cluster": "Cluster 4"}
+]
