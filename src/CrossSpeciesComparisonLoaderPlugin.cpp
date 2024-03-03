@@ -6,7 +6,6 @@
 #include <vector>
 #include <QtCore>
 #include <QtDebug>
-
 #include <random>
 #include <QInputDialog>
 #include <QSet>
