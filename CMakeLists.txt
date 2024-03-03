@@ -94,10 +94,12 @@ set(MV_LINK_SUFFIX $<IF:$<CXX_COMPILER_ID:MSVC>,${CMAKE_LINK_LIBRARY_SUFFIX},${C
 set(MV_LINK_LIBRARY "${MV_LINK_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}MV_Public${MV_LINK_SUFFIX}")
 set(POINTDATA_LINK_LIBRARY "${PLUGIN_LINK_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}PointData${MV_LINK_SUFFIX}") 
 set(CLUSTERDATA_LINK_LIBRARY "${PLUGIN_LINK_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}ClusterData${MV_LINK_SUFFIX}") 
+set(TREEDATA_LINK_LIBRARY "${PLUGIN_LINK_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}TreeData${MV_LINK_SUFFIX}") 
 
 target_link_libraries(${CrossSpeciesComparisonLOADER} PRIVATE "${MV_LINK_LIBRARY}")
 target_link_libraries(${CrossSpeciesComparisonLOADER} PRIVATE "${POINTDATA_LINK_LIBRARY}")
 target_link_libraries(${CrossSpeciesComparisonLOADER} PRIVATE "${CLUSTERDATA_LINK_LIBRARY}")
+target_link_libraries(${CrossSpeciesComparisonLOADER} PRIVATE "${TREEDATA_LINK_LIBRARY}")
 
 # -----------------------------------------------------------------------------
 # Target installation
