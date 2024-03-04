@@ -589,7 +589,10 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
     //auto data= treeDataset->getFullDataset<TreeData>()->getData();
      
     //_infoSettingsAction.getInfoAction().setString(QJsonDocument(data).toJson());
-    _infoSettingsAction.getInfoAction().setString(jsonString);
+    _infoSettingsAction.getTreeInfoAction().setString(jsonString);
+
+
+    //_infoSettingsAction.getLeafInfoAction().setString();
     /*auto datasetName = dataSetName + "_Tree";
     Dataset<Points> valuesDataset = mv::data().createDataset("Points", datasetName);
     

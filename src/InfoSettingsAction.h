@@ -24,10 +24,11 @@ public:
 public: // Action getters
 
 
-    StringAction& getInfoAction() { return _infoAction; }
-
+    StringAction& getTreeInfoAction() { return _treeInfoAction; }
+    StringAction& getLeafInfoAction() { return _leafInfoAction; }
 
 
 public:
-    StringAction    _infoAction;
+    StringAction    _treeInfoAction;
+    StringAction    _leafInfoAction;
 };

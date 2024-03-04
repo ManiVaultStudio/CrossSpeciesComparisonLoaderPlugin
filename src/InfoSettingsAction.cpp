@@ -4,15 +4,18 @@
 
 InfoSettingsAction::InfoSettingsAction(QObject* parent) :
     GroupAction(parent, "InfoSettingsAction", true),
-    _infoAction(this, "Info")
+    _treeInfoAction(this, "Tree info"),
+    _leafInfoAction(this, "Leaf info")
 {
     setText("Tree JSON Info");
-    _infoAction.setToolTip("Tree Info");
 
-    _infoAction.setDefaultWidgetFlags(StringAction::Label);
-    
 
+    _treeInfoAction.setDefaultWidgetFlags(StringAction::Label);
+    _leafInfoAction.setDefaultWidgetFlags(StringAction::Label);
+    //_infoAction.setDefaultWidgetFlags(StringAction::TextEdit);
+    //_infoAction.setClearable(false);
+    //_infoAction->setReadOnly(true);
     // Add the widgetActionDatasetNameAction to your widget
-    addAction(&_infoAction);
-
+    addAction(&_leafInfoAction);
+    addAction(&_treeInfoAction);
 }
