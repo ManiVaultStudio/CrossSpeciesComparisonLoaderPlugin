@@ -437,7 +437,7 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
                 int id = 1;
                 _treeData = convertJsonArray(jsonObject, id);
 
-                std::cout << QJsonDocument(_treeData).toJson().toStdString() << std::endl;
+                //std::cout << QJsonDocument(_treeData).toJson().toStdString() << std::endl;
 
                 message = "Processed";
             }
@@ -584,12 +584,12 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
     events().notifyDatasetAdded(treeDataset);
     treeDataset->setData(_treeData);
     treeDataset->addAction(_infoSettingsAction);
-
     QJsonDocument jsonDoc(_treeData);
     QString jsonString = jsonDoc.toJson();
-    _infoSettingsAction.getInfoAction().setClearable(false);
+    //auto data= treeDataset->getFullDataset<TreeData>()->getData();
+     
+    //_infoSettingsAction.getInfoAction().setString(QJsonDocument(data).toJson());
     _infoSettingsAction.getInfoAction().setString(jsonString);
-    
     /*auto datasetName = dataSetName + "_Tree";
     Dataset<Points> valuesDataset = mv::data().createDataset("Points", datasetName);
     
