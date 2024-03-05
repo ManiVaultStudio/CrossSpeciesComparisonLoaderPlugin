@@ -586,8 +586,8 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
     treeDataset->addAction(_infoSettingsAction);
     QJsonDocument jsonDoc(_treeData);
     QString jsonString = jsonDoc.toJson();
-    //auto data= treeDataset->getFullDataset<TreeData>()->getData();
-    Dataset<TreeData> checkDataset = treeDataset->getFullDataset<TreeData>();
+    //auto data= treeDataset->getFullDataset<Tree>()->getData();
+    Dataset<Tree> checkDataset = treeDataset->getFullDataset<Tree>();
     //_infoSettingsAction.getInfoAction().setString(QJsonDocument(data).toJson());
     QStringList leafValues= checkDataset->getSpeciesNames();
     QJsonObject fulltree= checkDataset->getData();
