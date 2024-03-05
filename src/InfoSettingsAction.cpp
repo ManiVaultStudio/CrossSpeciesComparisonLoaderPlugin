@@ -10,12 +10,24 @@ InfoSettingsAction::InfoSettingsAction(QObject* parent) :
     setText("Tree JSON Info");
 
 
-    _treeInfoAction.setDefaultWidgetFlags(StringAction::Label);
-    _leafInfoAction.setDefaultWidgetFlags(StringAction::Label);
+    _treeInfoAction.setDefaultWidgetFlags(StringAction::TextEdit);
+    _leafInfoAction.setDefaultWidgetFlags(StringAction::TextEdit);
     //_infoAction.setDefaultWidgetFlags(StringAction::TextEdit);
     //_infoAction.setClearable(false);
     //_infoAction->setReadOnly(true);
     // Add the widgetActionDatasetNameAction to your widget
-    addAction(&_leafInfoAction);
-    addAction(&_treeInfoAction);
+    addAction(&_leafInfoAction, -1, [this](WidgetAction* action, QWidget* widget) -> void {
+        auto textEdit = widget->findChild<QTextEdit*>("LineEdit");
+
+        if (textEdit)
+            textEdit->setReadOnly(true);
+
+        });
+    addAction(&_treeInfoAction, -1, [this](WidgetAction* action, QWidget* widget) -> void {
+        auto textEdit = widget->findChild<QTextEdit*>("LineEdit");
+
+        if (textEdit)
+            textEdit->setReadOnly(true);
+
+        });
 }
