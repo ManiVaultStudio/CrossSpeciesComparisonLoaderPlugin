@@ -1,0 +1,22 @@
+[
+    ['Cluster 1', 'Human', 'Chimpanzee'], 
+    ['Cluster 2', 'Gorilla'], 
+    ['Cluster 3', 'Rhesus macaque', 'Pig-tailed macaque'], 
+    ['Cluster 4', 'Olive baboon'], 
+    ['Cluster 5', 'African green monkey'], 
+    ['Cluster 7', 'Squirrel monkey', 'Capuchin'], 
+    ['Cluster 8', 'Mormoset'], 
+    ['Cluster 9', 'Owl monkey'], 
+    ['Cluster 11', 'Galago', 'Mouse Lemur'], 
+    ['Cluster 13', 'Treeshrew'],
+    ['Cluster 14', 'Mouse', 'Rat'],
+    ['Cluster 16', 'Naked mole rat'],
+    ['Cluster 17', 'Arctic ground squirrel'],
+    ['Cluster 18', 'Rabbit'],
+    ['Cluster 20', 'Ferret', 'Coyote'],
+    ['Cluster 21', 'Cat'],
+    ['Cluster 22', 'Pig'],
+    ['Cluster 23', 'Egyptian fruit bat'],
+    ['Cluster 25', 'Armadillo'],
+    ['Cluster 26', 'Opossum']
+]

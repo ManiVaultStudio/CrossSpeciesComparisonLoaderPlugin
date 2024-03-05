@@ -3,6 +3,10 @@
 #include <LoaderPlugin.h>
 #include "InputDialogCSV.h"
 #include "InputDialogJSON.h"
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include "InfoSettingsAction.h"
 using namespace mv::plugin;
 
 // =============================================================================
@@ -37,7 +41,6 @@ private:
 
     std::vector<QString> _speciesNames;
     std::vector<ClusterInput> _speciesOrder;
-
     QString pointValuesDatasetName;
     int pointValuesDatasetDatasetNumPoints;
     int pointValuesDatasetDatasetNumDimensions;
@@ -48,6 +51,8 @@ private:
     QString identifierDatasetName;
     std::vector<float> identifierDatasetCell;
     std::vector<QString> identifierDatasetCellDimensionNames;
+    QJsonObject _treeData;  
+    InfoSettingsAction _infoSettingsAction;
 
 };
 

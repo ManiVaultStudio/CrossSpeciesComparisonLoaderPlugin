@@ -2,11 +2,11 @@
 
 #include "PointData/PointData.h"
 #include "ClusterData/ClusterData.h"
+#include "TreeData/TreeData.h"
 #include "Set.h"
 #include <vector>
 #include <QtCore>
 #include <QtDebug>
-
 #include <random>
 #include <QInputDialog>
 #include <QSet>
@@ -17,7 +17,6 @@
 #include <QSet>
 #include <set>
 #include <iostream>
-
 #include <string>
 #include <map>
 #include <limits.h>
@@ -33,9 +32,12 @@ using namespace mv;
 
 CrossSpeciesComparisonLoaderPlugin::CrossSpeciesComparisonLoaderPlugin(const PluginFactory* factory):
     LoaderPlugin(factory),
-    _dataSetName("")
+    _dataSetName(""),
+    _infoSettingsAction()
 {
-    
+    //_infoSettingsAction.setDefaultWidgetFlags(StringAction::TextEdit);
+    //_infoSettingsAction.setShowLabels(false);
+    //_infoSettingsAction.setDisabled(true);
 }
 
 CrossSpeciesComparisonLoaderPlugin::~CrossSpeciesComparisonLoaderPlugin(void)
@@ -176,6 +178,40 @@ bool hasNumericColumn(const std::vector<QStringList>& loadedData)
     }
     return false; // No numeric column found
 }
+
+
+QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
+    QJsonObject newObject;
+
+    if (jsonObject.contains("name")) {
+        newObject["name"] = jsonObject["name"].toString();
+        newObject["color"] = "#000000";
+        newObject["hastrait"] = true;
+        newObject["iscollapsed"] = false;
+    }
+
+    if (jsonObject.contains("children")) {
+        QJsonArray childrenArray = jsonObject["children"].toArray();
+        QJsonArray newChildrenArray;
+
+        for (int i = 0; i < childrenArray.size(); i++) {
+            QJsonObject childObject = childrenArray[i].toObject();
+            newChildrenArray.append(convertJsonArray(childObject, id));
+        }
+
+        newObject["children"] = newChildrenArray;
+
+        // If the object has a "name" field, it's a leaf node and should not have "id", "score", and "width" fields
+        if (!jsonObject.contains("name")) {
+            newObject["id"] = id++;
+            newObject["score"] = 1.0;
+            newObject["width"] = 1;
+        }
+    }
+
+    return newObject;
+}
+
 
 
 void CrossSpeciesComparisonLoaderPlugin::loadData()
@@ -395,30 +431,14 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
         QJsonDocument doc = QJsonDocument::fromJson(jsonData);
 
         if (!doc.isNull()) {
-            if (doc.isArray()) {
-                QJsonArray jsonArray = doc.array();
-                //std::vector<ClusterInput> order;
-                _speciesOrder.clear();
+            if (doc.isObject()) {
+                QJsonObject jsonObject= doc.object();
 
-                for (int i = 0; i < jsonArray.size(); ++i) {
-                    QJsonObject jsonObject = jsonArray[i].toObject();
-                    ClusterInput input;
-                    input.value1 = jsonObject["value1"].toString().toStdString();
-                    input.value2 = jsonObject["value2"].toString().toStdString();
-                    input.cluster = jsonObject["cluster"].toString().toStdString();
-                    _speciesOrder.push_back(input);
-                }
+                int id = 1;
+                _treeData = convertJsonArray(jsonObject, id);
 
-                _speciesNames.clear();
-                for (const auto& input : _speciesOrder) {
-                    if (input.value1.find("Cluster") == std::string::npos) {
-                        _speciesNames.push_back(QString::fromStdString(input.value1));
-                    }
-                    if (input.value2.find("Cluster") == std::string::npos) {
-                        _speciesNames.push_back(QString::fromStdString(input.value2));
-                    }
-                }
-                std::sort(_speciesNames.begin(), _speciesNames.end());
+                //std::cout << QJsonDocument(_treeData).toJson().toStdString() << std::endl;
+
                 message = "Processed";
             }
             else {
@@ -560,9 +580,24 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
     // Generate distance matrix
     std::vector<std::vector<float>> distanceMatrix = generateDistanceMatrix(_speciesOrder, _speciesNames);
 
-    auto datasetName = dataSetName + "_Tree";
+    Dataset<Tree> treeDataset = mv::data().createDataset("Tree", dataSetName + "_Tree");
+    events().notifyDatasetAdded(treeDataset);
+    treeDataset->setData(_treeData);
+    treeDataset->addAction(_infoSettingsAction);
+    QJsonDocument jsonDoc(_treeData);
+    QString jsonString = jsonDoc.toJson();
+    //auto data= treeDataset->getFullDataset<Tree>()->getData();
+    Dataset<Tree> checkDataset = treeDataset->getFullDataset<Tree>();
+    //_infoSettingsAction.getInfoAction().setString(QJsonDocument(data).toJson());
+    QStringList leafValues= checkDataset->getSpeciesNames();
+    QJsonObject fulltree= checkDataset->getData();
+    _infoSettingsAction.getTreeInfoAction().setString(QJsonDocument(fulltree).toJson());
+    QString textleaf = leafValues.join("\n");
+
+    _infoSettingsAction.getLeafInfoAction().setString(textleaf);
+    /*auto datasetName = dataSetName + "_Tree";
     Dataset<Points> valuesDataset = mv::data().createDataset("Points", datasetName);
-    events().notifyDatasetAdded(valuesDataset);
+    
 
     std::vector<float> flatMatrix;
     int numRows = distanceMatrix.size();
@@ -575,9 +610,9 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
     }
 
     valuesDataset->setData(flatMatrix.data(), numRows, numCols);
-    valuesDataset->setDimensionNames(_speciesNames);
+    valuesDataset->setDimensionNames(_speciesNames);*/
 
-    events().notifyDatasetDataChanged(valuesDataset);
+    events().notifyDatasetDataChanged(treeDataset);
 
     /*
     // Create an output string stream
