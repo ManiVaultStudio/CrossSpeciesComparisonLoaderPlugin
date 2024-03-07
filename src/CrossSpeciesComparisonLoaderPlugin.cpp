@@ -2,7 +2,6 @@
 
 #include "PointData/PointData.h"
 #include "ClusterData/ClusterData.h"
-#include "TreeData/TreeData.h"
 #include "Set.h"
 #include <vector>
 #include <QtCore>
@@ -333,7 +332,7 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
 
                                     if (areListsEqual(headerRow, lastColumn))
                                     {
-                                        checkTypeValue = "Tree";
+                                        checkTypeValue = "CrossSpeciesComparisonTree";
                                         for (int i = 0; i < extractedData.size(); i++)
                                         {
                                             for (int j = 0; j < extractedData[i].size(); j++)
@@ -399,7 +398,7 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
 
         // Gather some knowledge about the data from the user
         auto fileNameString = fileName.toStdString();
-        //checkTypeValue = "None"; //"Tree" or "Trait" or "None"
+        //checkTypeValue = "None"; //"CrossSpeciesComparisonTree" or "Trait" or "None"
         InputDialogCSV inputDialog(nullptr, fileNameString, checkTypeValue);
         inputDialog.setModal(true);
 
@@ -453,7 +452,7 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
     
     // Gather some knowledge about the data from the user
     auto fileNameString = fileName.toStdString();
-    //checkTypeValue = "None"; //"Tree" or "Trait" or "None"
+    //checkTypeValue = "None"; //"CrossSpeciesComparisonTree" or "Trait" or "None"
     InputDialogJSON inputDialog(nullptr, fileNameString, message);
     inputDialog.setModal(true);
 
@@ -580,14 +579,14 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
     // Generate distance matrix
     std::vector<std::vector<float>> distanceMatrix = generateDistanceMatrix(_speciesOrder, _speciesNames);
 
-    Dataset<Tree> treeDataset = mv::data().createDataset("Tree", dataSetName + "_Tree");
+    Dataset<CrossSpeciesComparisonTree> treeDataset = mv::data().createDataset("CrossSpeciesComparisonTree", dataSetName + "_Tree");
     events().notifyDatasetAdded(treeDataset);
     treeDataset->setData(_treeData);
     treeDataset->addAction(_infoSettingsAction);
     QJsonDocument jsonDoc(_treeData);
     QString jsonString = jsonDoc.toJson();
-    //auto data= treeDataset->getFullDataset<Tree>()->getData();
-    Dataset<Tree> checkDataset = treeDataset->getFullDataset<Tree>();
+    //auto data= treeDataset->getFullDataset<CrossSpeciesComparisonTree>()->getData();
+    Dataset<CrossSpeciesComparisonTree> checkDataset = treeDataset->getFullDataset<CrossSpeciesComparisonTree>();
     //_infoSettingsAction.getInfoAction().setString(QJsonDocument(data).toJson());
     QStringList leafValues= checkDataset->getSpeciesNames();
     QJsonObject fulltree= checkDataset->getData();
@@ -648,7 +647,7 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
 void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QString typeName)
 {
 
- //"Tree" or "Trait" or "None"
+ //"CrossSpeciesComparisonTree" or "Trait" or "None"
     if (checkTypeValue != "None" )
     {
 
@@ -669,9 +668,9 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
         */
         std::string realType= typeName.toStdString();
 
-        if(checkTypeValue == "Tree" && realType == "Tree")
+        if(checkTypeValue == "CrossSpeciesComparisonTree" && realType == "CrossSpeciesComparisonTree")
         {
-            if (checkTypeValue == "Tree")
+            if (checkTypeValue == "CrossSpeciesComparisonTree")
             {
 
                 /*
@@ -747,7 +746,7 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
         }
         else
         {
-            if (checkTypeValue == "Meta" || (checkTypeValue == "Tree"))
+            if (checkTypeValue == "Meta" || (checkTypeValue == "CrossSpeciesComparisonTree"))
             {
                 _numericColumnValues.clear();
                 _stringColumnStrings.clear();

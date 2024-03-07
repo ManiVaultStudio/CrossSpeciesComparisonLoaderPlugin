@@ -4,10 +4,10 @@
 
 InfoSettingsAction::InfoSettingsAction(QObject* parent) :
     GroupAction(parent, "InfoSettingsAction", true),
-    _treeInfoAction(this, "Tree info"),
+    _treeInfoAction(this, "CrossSpeciesComparisonTree info"),
     _leafInfoAction(this, "Leaf info")
 {
-    setText("Tree JSON Info");
+    setText("CrossSpeciesComparisonTree JSON Info");
 
 
     _treeInfoAction.setDefaultWidgetFlags(StringAction::TextEdit);
