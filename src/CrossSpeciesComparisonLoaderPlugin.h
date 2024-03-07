@@ -6,7 +6,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
-#include "CrossSpeciesComparisonTreeData/CrossSpeciesComparisonTreeData.h"
+#include "CrossSpeciesComparisonTreeData.h"
 #include "InfoSettingsAction.h"
 using namespace mv::plugin;
 
