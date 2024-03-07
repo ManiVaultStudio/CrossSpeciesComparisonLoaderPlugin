@@ -15,7 +15,7 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath,std::strin
     messageValue->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
 
-    if (checkTypeValue == "Tree")
+    if (checkTypeValue == "CrossSpeciesComparisonTree")
     {
         messageValue->setText("Data can be loaded as a tree or a meta dataset! Please choose the option below.");
         messageValue->setStyleSheet("QLabel { color : black; font-size: 12pt; }");  // Adjust styles as needed
@@ -39,7 +39,7 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath,std::strin
     addButton->setDefault(true);
 
 
-     treeDataType = new QRadioButton("Tree");
+     treeDataType = new QRadioButton("CrossSpeciesComparisonTree");
     metaDataType = new QRadioButton("Meta");
     treeDataType->setChecked(true);
 
@@ -54,7 +54,7 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath,std::strin
     QVBoxLayout *layout = new QVBoxLayout();
 
     layout->addWidget(messageValue);
-    if(checkTypeValue == "Tree" /*|| checkTypeValue == "Trait"*/ || checkTypeValue == "Meta")
+    if(checkTypeValue == "CrossSpeciesComparisonTree" /*|| checkTypeValue == "Trait"*/ || checkTypeValue == "Meta")
     {
         auto labelDataNameValue = std::make_unique<QLabel>(tr("&File name: "));
         labelDataNameValue->setBuddy(_dataNameValue);
@@ -62,7 +62,7 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath,std::strin
         layout->addWidget(_dataNameValue);
 
 
-        if(checkTypeValue == "Tree")
+        if(checkTypeValue == "CrossSpeciesComparisonTree")
         {
             QHBoxLayout* dataTypeLayout = new QHBoxLayout();
             dataTypeLayout->addWidget(treeDataType);
@@ -90,7 +90,7 @@ void InputDialogCSV::closeDialogAction()
 {
     if(treeDataType->isChecked())
     {
-               emit closeDialogCSV(_dataNameValue->text(), "Tree");
+               emit closeDialogCSV(_dataNameValue->text(), "CrossSpeciesComparisonTree");
     }
     else if(metaDataType->isChecked())
     {
