@@ -31,8 +31,7 @@ using namespace mv;
 
 CrossSpeciesComparisonLoaderPlugin::CrossSpeciesComparisonLoaderPlugin(const PluginFactory* factory):
     LoaderPlugin(factory),
-    _dataSetName(""),
-    _infoSettingsAction()
+    _dataSetName("")
 {
     //_infoSettingsAction.setDefaultWidgetFlags(StringAction::TextEdit);
     //_infoSettingsAction.setShowLabels(false);
@@ -581,19 +580,11 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
 
     Dataset<CrossSpeciesComparisonTree> treeDataset = mv::data().createDataset("CrossSpeciesComparisonTree", dataSetName + "_Tree");
     events().notifyDatasetAdded(treeDataset);
-    treeDataset->setData(_treeData);
-    treeDataset->addAction(_infoSettingsAction);
+    treeDataset->setTreeData(_treeData);
     QJsonDocument jsonDoc(_treeData);
     QString jsonString = jsonDoc.toJson();
     //auto data= treeDataset->getFullDataset<CrossSpeciesComparisonTree>()->getData();
-    Dataset<CrossSpeciesComparisonTree> checkDataset = treeDataset->getFullDataset<CrossSpeciesComparisonTree>();
-    //_infoSettingsAction.getInfoAction().setString(QJsonDocument(data).toJson());
-    QStringList leafValues= checkDataset->getSpeciesNames();
-    QJsonObject fulltree= checkDataset->getData();
-    _infoSettingsAction.getTreeInfoAction().setString(QJsonDocument(fulltree).toJson());
-    QString textleaf = leafValues.join("\n");
 
-    _infoSettingsAction.getLeafInfoAction().setString(textleaf);
     /*auto datasetName = dataSetName + "_Tree";
     Dataset<Points> valuesDataset = mv::data().createDataset("Points", datasetName);
     

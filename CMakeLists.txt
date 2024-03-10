@@ -47,8 +47,6 @@ set(CrossSpeciesComparisonLOADER_SOURCES
     src/InputDialogCSV.cpp
 	src/InputDialogJSON.h
     src/InputDialogJSON.cpp
-	src/InfoSettingsAction.h
-    src/InfoSettingsAction.cpp
 )
 
 set(PLUGIN_MOC_HEADERS
