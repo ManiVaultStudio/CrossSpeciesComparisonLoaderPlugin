@@ -580,7 +580,7 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
 
     Dataset<CrossSpeciesComparisonTree> treeDataset = mv::data().createDataset("CrossSpeciesComparisonTree", dataSetName + "_Tree");
     events().notifyDatasetAdded(treeDataset);
-    treeDataset->setData(_treeData);
+    treeDataset->setTreeData(_treeData);
     QJsonDocument jsonDoc(_treeData);
     QString jsonString = jsonDoc.toJson();
     //auto data= treeDataset->getFullDataset<CrossSpeciesComparisonTree>()->getData();
