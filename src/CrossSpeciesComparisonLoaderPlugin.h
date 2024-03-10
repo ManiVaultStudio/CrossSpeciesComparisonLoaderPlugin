@@ -7,7 +7,6 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include "CrossSpeciesComparisonTreeData.h"
-#include "InfoSettingsAction.h"
 using namespace mv::plugin;
 
 // =============================================================================
@@ -53,7 +52,6 @@ private:
     std::vector<float> identifierDatasetCell;
     std::vector<QString> identifierDatasetCellDimensionNames;
     QJsonObject _treeData;  
-    InfoSettingsAction _infoSettingsAction;
 
 };
 
