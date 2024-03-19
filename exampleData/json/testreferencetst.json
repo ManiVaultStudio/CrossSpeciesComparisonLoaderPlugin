@@ -1,5 +1,1 @@
-[
-    {"value1": "Human", "value2": "Marmoset", "cluster": "Cluster 1"},
-    {"value1": "Gorilla", "value2": "Chimpanzee", "cluster": "Cluster 2"},
-    {"value1": "Rhesus", "value2": "Cluster 2", "cluster": "Cluster 3"}
-]
+{"children":[{"children":[{"children":[{"children":[{"name": "human"},{"name": "chimpanzee"}]},{"name": "gorilla"}]},{"name": "rhesus"}]},{"name": "marmoset"}]}

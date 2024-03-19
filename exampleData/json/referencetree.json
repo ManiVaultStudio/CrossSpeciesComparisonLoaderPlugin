@@ -1,6 +1,33 @@
 [
     {"value1": "Human", "value2": "Chimpanzee", "cluster": "Cluster 1"},
     {"value1": "Gorilla", "value2": "Cluster 1", "cluster": "Cluster 2"},
-    {"value1": "Rhesus", "value2": "Cluster 2", "cluster": "Cluster 3"},
-	 {"value1": "Marmoset", "value2": "Cluster 3", "cluster": "Cluster 4"}
+    {"value1": "Rhesus macaque", "value2": "Pig-tailed macaque", "cluster": "Cluster 3"},
+	 {"value1": "Olive baboon", "value2": "Cluster 3", "cluster": "Cluster 4"},
+	 {"value1": "African green monkey", "value2": "Cluster 4", "cluster": "Cluster 5"},
+	 {"value1": "Cluster 2", "value2": "Cluster 5", "cluster": "Cluster 6"},
+	 {"value1": "Squirrel monkey", "value2": "Capuchin", "cluster": "Cluster 7"},
+	 {"value1": "Mormoset", "value2": "Cluster 7", "cluster": "Cluster 8"},
+	 {"value1": "Owl monkey", "value2": "Cluster 8", "cluster": "Cluster 9"}, 
+	 {"value1": "Cluster 6", "value2": "Cluster 9", "cluster": "Cluster 10"}, 
+	 {"value1": "Galago", "value2": "Mouse Lemur", "cluster": "Cluster 11"}, 
+	 {"value1": "Cluster 10", "value2": "Cluster 11", "cluster": "Cluster 12"},	 
+	 {"value1": "Treeshrew", "value2": "Cluster 12", "cluster": "Cluster 13"},
+	 
+	 
+	 
+	 {"value1": "Mouse", "value2": "Rat", "cluster": "Cluster 14"},
+	 {"value1": "Naked mole rat", "value2": "Cluster 15", "cluster": "Cluster 16"},
+	 {"value1": "Arctic ground squirrel", "value2": "Cluster 16", "cluster": "Cluster 17"},
+	 {"value1": "Rabbit", "value2": "Cluster 17", "cluster": "Cluster 18"},
+	 {"value1": "Cluster 13", "value2": "Cluster 18", "cluster": "Cluster 19"},
+	 
+	 {"value1": "Ferret", "value2": "Coyote", "cluster": "Cluster 20"},
+	 {"value1": "Cat", "value2": "Cluster 20", "cluster": "Cluster 21"},
+	 {"value1": "Pig", "value2": "Cluster 21", "cluster": "Cluster 22"},
+	 {"value1": "Egyptian fruit bat", "value2": "Cluster 22", "cluster": "Cluster 23"},
+	 
+	 {"value1": "Cluster 19", "value2": "Cluster 23", "cluster": "Cluster 24"},
+	 
+	 {"value1": "Armadillo", "value2": "Cluster 24", "cluster": "Cluster 25"},
+	 {"value1": "Opossum", "value2": "Cluster 25", "cluster": "Cluster 26"}
 ]

@@ -1,22 +1,318 @@
-[
-    ['Cluster 1', 'Human', 'Chimpanzee'], 
-    ['Cluster 2', 'Gorilla'], 
-    ['Cluster 3', 'Rhesus macaque', 'Pig-tailed macaque'], 
-    ['Cluster 4', 'Olive baboon'], 
-    ['Cluster 5', 'African green monkey'], 
-    ['Cluster 7', 'Squirrel monkey', 'Capuchin'], 
-    ['Cluster 8', 'Mormoset'], 
-    ['Cluster 9', 'Owl monkey'], 
-    ['Cluster 11', 'Galago', 'Mouse Lemur'], 
-    ['Cluster 13', 'Treeshrew'],
-    ['Cluster 14', 'Mouse', 'Rat'],
-    ['Cluster 16', 'Naked mole rat'],
-    ['Cluster 17', 'Arctic ground squirrel'],
-    ['Cluster 18', 'Rabbit'],
-    ['Cluster 20', 'Ferret', 'Coyote'],
-    ['Cluster 21', 'Cat'],
-    ['Cluster 22', 'Pig'],
-    ['Cluster 23', 'Egyptian fruit bat'],
-    ['Cluster 25', 'Armadillo'],
-    ['Cluster 26', 'Opossum']
-]
+{
+    "children": [
+        {
+            "children": [
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "color": "#000000",
+                                    "hastrait": true,
+                                    "iscollapsed": false,
+                                    "name": "pig"
+                                },
+                                {
+                                    "color": "#000000",
+                                    "hastrait": true,
+                                    "iscollapsed": false,
+                                    "name": "rabbit"
+                                }
+                            ],
+                            "id": 1,
+                            "score": 1,
+                            "width": 1
+                        },
+                        {
+                            "children": [
+                                {
+                                    "color": "#000000",
+                                    "hastrait": true,
+                                    "iscollapsed": false,
+                                    "name": "rat"
+                                },
+                                {
+                                    "color": "#000000",
+                                    "hastrait": true,
+                                    "iscollapsed": false,
+                                    "name": "rhesus_macaque"
+                                }
+                            ],
+                            "id": 1,
+                            "score": 1,
+                            "width": 1
+                        }
+                    ],
+                    "id": 1,
+                    "score": 1,
+                    "width": 1
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "color": "#000000",
+                                    "hastrait": true,
+                                    "iscollapsed": false,
+                                    "name": "south_american_squirrel_monkey"
+                                },
+                                {
+                                    "color": "#000000",
+                                    "hastrait": true,
+                                    "iscollapsed": false,
+                                    "name": "treeshrew"
+                                }
+                            ],
+                            "id": 1,
+                            "score": 1,
+                            "width": 1
+                        },
+                        {
+                            "children": [
+                                {
+                                    "color": "#000000",
+                                    "hastrait": true,
+                                    "iscollapsed": false,
+                                    "name": "arctic_ground_squirrel"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "african_green_monkey"
+                                        },
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "armadillo"
+                                        }
+                                    ],
+                                    "id": 1,
+                                    "score": 1,
+                                    "width": 1
+                                }
+                            ],
+                            "id": 1,
+                            "score": 1,
+                            "width": 1
+                        }
+                    ],
+                    "id": 1,
+                    "score": 1,
+                    "width": 1
+                }
+            ],
+            "id": 1,
+            "score": 1,
+            "width": 1
+        },
+        {
+            "children": [
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "baboon"
+                                        },
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "capuchin"
+                                        }
+                                    ],
+                                    "id": 1,
+                                    "score": 1,
+                                    "width": 1
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "cat"
+                                        },
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "chimp"
+                                        }
+                                    ],
+                                    "id": 1,
+                                    "score": 1,
+                                    "width": 1
+                                }
+                            ],
+                            "id": 1,
+                            "score": 1,
+                            "width": 1
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "coyote"
+                                        },
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "ferret"
+                                        }
+                                    ],
+                                    "id": 1,
+                                    "score": 1,
+                                    "width": 1
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "galago"
+                                        },
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "gorilla"
+                                        }
+                                    ],
+                                    "id": 1,
+                                    "score": 1,
+                                    "width": 1
+                                }
+                            ],
+                            "id": 1,
+                            "score": 1,
+                            "width": 1
+                        }
+                    ],
+                    "id": 1,
+                    "score": 1,
+                    "width": 1
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "gray_mouse_lemur"
+                                        },
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "human"
+                                        }
+                                    ],
+                                    "id": 1,
+                                    "score": 1,
+                                    "width": 1
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "macaque_nemestrina"
+                                        },
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "marmoset"
+                                        }
+                                    ],
+                                    "id": 1,
+                                    "score": 1,
+                                    "width": 1
+                                }
+                            ],
+                            "id": 1,
+                            "score": 1,
+                            "width": 1
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "mouse"
+                                        },
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "naked_mole_rat"
+                                        }
+                                    ],
+                                    "id": 1,
+                                    "score": 1,
+                                    "width": 1
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "opossum"
+                                        },
+                                        {
+                                            "color": "#000000",
+                                            "hastrait": true,
+                                            "iscollapsed": false,
+                                            "name": "owl_monkey"
+                                        }
+                                    ],
+                                    "id": 1,
+                                    "score": 1,
+                                    "width": 1
+                                }
+                            ],
+                            "id": 1,
+                            "score": 1,
+                            "width": 1
+                        }
+                    ],
+                    "id": 1,
+                    "score": 1,
+                    "width": 1
+                }
+            ],
+            "id": 1,
+            "score": 1,
+            "width": 1
+        }
+    ],
+    "id": 1,
+    "score": 1,
+    "width": 1
+}
