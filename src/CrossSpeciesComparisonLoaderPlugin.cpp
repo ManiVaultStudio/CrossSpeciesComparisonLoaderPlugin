@@ -215,7 +215,7 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
 void CrossSpeciesComparisonLoaderPlugin::loadData()
 {
 
-    const auto fileName = AskForFileName(QObject::tr("CSV Files (*.csv);;JSON Files (*.json)"));
+    const auto fileName = AskForFileName(QObject::tr("JSON Files (*.json);;CSV Files (*.csv)"));
     checkTypeValue = "None";
     if (fileName.isEmpty())
     {
