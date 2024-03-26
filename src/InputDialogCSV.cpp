@@ -1,10 +1,10 @@
 #include "InputDialogCSV.h"
 #include "PointData/PointData.h"
 
-InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath,std::string checkTypeValue) :
+InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath, std::string checkTypeValue, QStringList headers) :
     QDialog(parent)
 {
-    setWindowTitle(tr("Cross Species Comparison JSON Data Loader"));   
+    setWindowTitle(tr("Cross Species Comparison Data Loader"));
     std::string fullfileName = filePath.substr(filePath.find_last_of("/\\") + 1);
     _dataNameValue = new QLineEdit();
     _dataNameValue->setText(QString::fromStdString(fullfileName.substr(0, (fullfileName.find_last_of(".")))));
@@ -15,19 +15,14 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath,std::strin
     messageValue->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
 
-    if (checkTypeValue == "CrossSpeciesComparisonTree")
+    if (checkTypeValue == "AllData")
     {
-        messageValue->setText("Data can be loaded as a tree or a meta dataset! Please choose the option below.");
+        messageValue->setText("Please choose the option below.");
         messageValue->setStyleSheet("QLabel { color : black; font-size: 12pt; }");  // Adjust styles as needed
     }
-    /*else if (checkTypeValue == "Trait")
+    else if (checkTypeValue == "MetaData")
     {
-        messageValue->setText("Data can be loaded as a trait dataset!");
-        messageValue->setStyleSheet("QLabel { color : black;  font-size: 12pt; }");  // Adjust styles as needed
-    }*/
-    else if (checkTypeValue == "Meta")
-    {
-        messageValue->setText("Data can can be loaded as a metadata dataset!");
+        messageValue->setText("Data can can be loaded as metadata!");
         messageValue->setStyleSheet("QLabel { color : black;  font-size: 12pt; }");  // Adjust styles as needed
     }
     else
@@ -39,13 +34,37 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath,std::strin
     addButton->setDefault(true);
 
 
-     treeDataType = new QRadioButton("CrossSpeciesComparisonTree");
+    allDataType = new QRadioButton("Point and Cluster");
     metaDataType = new QRadioButton("Meta");
-    treeDataType->setChecked(true);
+    metaDataType->setChecked(true);
+    //allDataType->setChecked(true);
 
     okButton = new QPushButton(tr("close"));
     okButton->setDefault(true);
+    _leafOptionValues = new QComboBox();
+    _leafOptionValues->addItems(headers);
 
+    _leafOptionValues->setCurrentIndex(0);
+
+    const auto allDataTypeVals = [this]() -> void
+        {
+            if (allDataType->isChecked())
+            {
+                _leafOptionValues->setEnabled(false);
+            }
+
+        };
+    const auto metaDataTypeVals = [this]() -> void
+        {
+            if (metaDataType->isChecked())
+            {
+                _leafOptionValues->setEnabled(true);
+            }
+
+        };
+    connect(allDataType, &QRadioButton::clicked, this, allDataTypeVals);
+    connect(metaDataType, &QRadioButton::clicked, this, metaDataTypeVals);
+    
     connect(okButton, &QPushButton::pressed, this, &InputDialogCSV::okDialogAction);
 
     connect(addButton, &QPushButton::pressed, this, &InputDialogCSV::closeDialogAction);
@@ -54,27 +73,33 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath,std::strin
     QVBoxLayout *layout = new QVBoxLayout();
 
     layout->addWidget(messageValue);
-    if(checkTypeValue == "CrossSpeciesComparisonTree" /*|| checkTypeValue == "Trait"*/ || checkTypeValue == "Meta")
+
+    if (checkTypeValue == "MetaData" || checkTypeValue == "AllData")
     {
+
+
         auto labelDataNameValue = std::make_unique<QLabel>(tr("&File name: "));
         labelDataNameValue->setBuddy(_dataNameValue);
         layout->addWidget(labelDataNameValue.release());
         layout->addWidget(_dataNameValue);
-
-
-        if(checkTypeValue == "CrossSpeciesComparisonTree")
+        if (checkTypeValue == "AllData")
         {
+
             QHBoxLayout* dataTypeLayout = new QHBoxLayout();
-            dataTypeLayout->addWidget(treeDataType);
             dataTypeLayout->addWidget(metaDataType);
+            dataTypeLayout->addWidget(allDataType);
 
-            auto labelDataTypeValue =new QLabel(tr("Data type: "));
+
+
+            auto labelDataTypeValue = new QLabel(tr("Data type: "));
             layout->addWidget(labelDataTypeValue);
-
             layout->addLayout(dataTypeLayout);
+
         }
-
-
+            auto leafnamesTypeValue = new QLabel(tr("Leaf names: "));
+            layout->addWidget(leafnamesTypeValue);
+            layout->addWidget(_leafOptionValues);
+            
         layout->addWidget(addButton);
     }
     else
@@ -82,19 +107,22 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath,std::strin
         layout->addWidget(okButton);
     }
 
+
+
+
     setLayout(layout);
     adjustSize();
 }
 
 void InputDialogCSV::closeDialogAction()
 {
-    if(treeDataType->isChecked())
+    if(allDataType->isChecked())
     {
-               emit closeDialogCSV(_dataNameValue->text(), "CrossSpeciesComparisonTree");
+               emit closeDialogCSV(_dataNameValue->text(), "Normal", _leafOptionValues->currentText());
     }
     else if(metaDataType->isChecked())
     {
-               emit closeDialogCSV(_dataNameValue->text(), "Meta");
+               emit closeDialogCSV(_dataNameValue->text(), "Meta", _leafOptionValues->currentText());
     }
 
     //emit closeDialog(_dataNameValue->text());

@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include "CrossSpeciesComparisonTreeData.h"
+#include "CrossSpeciesComparisonTreeMetaData.h"
 using namespace mv::plugin;
 
 // =============================================================================
@@ -28,7 +29,7 @@ public:
 
     void loadData() Q_DECL_OVERRIDE;
 public slots:
-    void dialogClosedCSV(QString dataSetName, QString TypeName);
+    void dialogClosedCSV(QString dataSetName, QString TypeName, QString leafColumn);
     void dialogClosedJSON(QString dataSetName, QString TypeName);
 
 private:
