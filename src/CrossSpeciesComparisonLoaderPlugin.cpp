@@ -20,6 +20,7 @@
 #include <map>
 #include <limits.h>
 #include <sstream>
+#include <QFileDialog>
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.CrossSpeciesComparisonLoaderPlugin")
 
@@ -215,7 +216,13 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
 void CrossSpeciesComparisonLoaderPlugin::loadData()
 {
 
-    const auto fileName = AskForFileName(QObject::tr("JSON Files (*.json);;CSV Files (*.csv)"));
+    //const auto fileName = AskForFileName(QObject::tr("JSON and CSV Files (*.json *.csv)"));
+    QString fileName = QFileDialog::getOpenFileName(
+        nullptr,
+        "Open File",
+        "",
+        "JSON and CSV Files (*.json *.csv)"
+    );
     checkTypeValue = "None";
     if (fileName.isEmpty())
     {
@@ -230,11 +237,6 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
     if (fileName.endsWith(".csv")) {
         qDebug() << "Loading CSV file: " << fileName;
 
-        pointValuesDatasetDatasetNumPoints = -1;
-        pointValuesDatasetDatasetNumDimensions = -1;
-        pointValuesDatasetDatasetDimensionNames = { };
-        clusterValuesDatasetDatasetClusterNames = { };
-        pointValuesDatasetDatasetDataValues = {  };
 
         QTextStream in(&file);
 
@@ -278,127 +280,28 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
             }
         }
 
-
-        // Extract last column without the header
-        QStringList lastColumn;
-        for (int i = 1; i < _loadedData.size(); ++i) {
-            lastColumn.push_back(_loadedData[i].last());
-        }
-
-        //  Extract header row without the last column name
+        //  Extract header row 
         QStringList headerRow = _loadedData[0];
-        headerRow.removeLast();
+        //headerRow.removeLast(); //without the last column name
 
-
-        // Extract all data except the header row and the last column
-        std::vector<QStringList> extractedData;
-        for (int i = 1; i < _loadedData.size(); ++i) {
-            QStringList rowData = _loadedData[i];
-            rowData.removeLast();  // Remove the last column
-            extractedData.push_back(rowData);
-        }
         if (!_loadedData.empty())
         {
-            /*
-            QStringList& firstEntry = _loadedData.front();
-            bool notonlyHeaders = std::all_of(firstEntry.begin(), firstEntry.end(), [](const QString& token) {
-                return token.trimmed().isEmpty();
-                });
 
 
-            if(notonlyHeaders)*/
+            if (hasNumericColumn(_loadedData))
             {
-                if (areAllValuesNonEmpty(_loadedData))
-                {
-                    if (areAllValuesNonEmpty(headerRow) && areAllValuesNonEmpty(lastColumn))
-                    {
-                        if (areAllStrings(headerRow) && areAllStrings(lastColumn))
-                        {
-
-                            if (areAllValuesUnique(headerRow) && areAllValuesUnique(lastColumn))
-                            {
-                                if (areAllValuesNumeric(extractedData))
-                                {
-
-                                    // Convert QStringList to std::vector<QString> 
-                                    std::vector<QString> stdVectorHeaderRow(headerRow.begin(), headerRow.end());
-                                    std::vector<QString> stdVectorlastColumn(lastColumn.begin(), lastColumn.end());
-                                    pointValuesDatasetDatasetDimensionNames = stdVectorHeaderRow;
-                                    clusterValuesDatasetDatasetClusterNames = stdVectorlastColumn;
-                                    pointValuesDatasetDatasetNumPoints = stdVectorlastColumn.size();
-                                    pointValuesDatasetDatasetNumDimensions = stdVectorHeaderRow.size();
-
-
-                                    if (areListsEqual(headerRow, lastColumn))
-                                    {
-                                        checkTypeValue = "CrossSpeciesComparisonTree";
-                                        for (int i = 0; i < extractedData.size(); i++)
-                                        {
-                                            for (int j = 0; j < extractedData[i].size(); j++)
-                                            {
-                                                pointValuesDatasetDatasetDataValues.push_back(extractedData[i][j].toFloat());
-                                            }
-                                        }
-                                    }
-                                    /*else
-                                    {
-                                        if (areAllValuesZeroOrOne(extractedData))
-                                        {
-                                            checkTypeValue = "Trait";
-                                        }
-                                        else
-                                        {
-                                            qDebug() << "Some values are not 0 or 1.";
-                                        }
-                                    }*/
-
-
-                                }
-                                else
-                                {
-                                    qDebug() << "Some values are not numeric.";
-                                }
-                            }
-                            else
-                            {
-                                qDebug() << "All elements are not unique.";
-                            }
-
-                        }
-
-                        else
-                        {
-                            qDebug() << "All elements are not strings.";
-                        }
-                    }
-                    else
-                    {
-                        qDebug() << "all elements are not present";
-                    }
-                }
-                else
-                {
-                    qDebug() << "Some values are empty.";
-                }
-
-                if (checkTypeValue == "None")
-                {
-                    if (hasNumericColumn(_loadedData))
-                    {
-                        checkTypeValue = "Meta";
-                    }
-
-                }
+                checkTypeValue = "AllData";
             }
-
-
+            else
+            {
+                checkTypeValue = "MetaData";
+            }
         }
 
 
         // Gather some knowledge about the data from the user
         auto fileNameString = fileName.toStdString();
-        //checkTypeValue = "None"; //"CrossSpeciesComparisonTree" or "Trait" or "None"
-        InputDialogCSV inputDialog(nullptr, fileNameString, checkTypeValue);
+        InputDialogCSV inputDialog(nullptr, fileNameString, checkTypeValue, headerRow);
         inputDialog.setModal(true);
 
         connect(&inputDialog, &InputDialogCSV::closeDialogCSV, this, &CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV);
@@ -460,29 +363,6 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
 
     int inputOk = inputDialog.exec();
 }
-    /*
-
-    // i) Extract rows by row number without the last column
-    int rowNumToExtract = 1; // Replace with the desired row number
-    QStringList extractedRow = _loadedData[rowNumToExtract];
-    extractedRow.removeLast();
-
-    // ii) Extract column by column number without the header
-    int colNumToExtract = 2; // Replace with the desired column number
-    QStringList extractedColumn;
-    for (int i = 1; i < _loadedData.size(); ++i) {
-        extractedColumn.push_back(_loadedData[i][colNumToExtract]);
-    }
-
-
-    */
-
-
-
-
-
-
-
 
 }
 
@@ -635,28 +515,16 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
     
 }
 
-void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QString typeName)
+void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QString typeName,QString leafColumn)
 {
 
- //"CrossSpeciesComparisonTree" or "Trait" or "None"
-    if (checkTypeValue != "None" )
+
+    if (checkTypeValue ==  "AllData" || checkTypeValue == "MetaData")
     {
 
 
         identifierDatasetName = dataSetName;
-        /*
-        QString pointValuesDatasetName;
-        int pointValuesDatasetDatasetNumPoints;
-        int pointValuesDatasetDatasetNumDimensions;
-        std::vector<QString>  pointValuesDatasetDatasetDimensionNames;
-        std::vector<QString>  clusterValuesDatasetDatasetClusterNames;
-        std::vector<float> pointValuesDatasetDatasetDataValues;
-        QString clusterValuesDatasetName;
-        QString identifierDatasetName;
-        std::vector<float> identifierDatasetCell;
-        std::vector<QString> identifierDatasetCellDimensionNames;
 
-        */
         std::string realType= typeName.toStdString();
 
         if(checkTypeValue == "CrossSpeciesComparisonTree" && realType == "CrossSpeciesComparisonTree")
@@ -664,76 +532,25 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
             if (checkTypeValue == "CrossSpeciesComparisonTree")
             {
 
-                /*
-                pointValuesDatasetDatasetNumPoints = 5;
-                pointValuesDatasetDatasetNumDimensions = 5;
-                pointValuesDatasetDatasetDimensionNames = { "Chimpanzee","Gorilla", "Human","Marmoset","Rhesus" };
-                clusterValuesDatasetDatasetClusterNames = { "Chimpanzee","Gorilla", "Human","Marmoset","Rhesus" };
-                pointValuesDatasetDatasetDataValues = { 0.0,0.0,0.0,4.0,0.0,0.0,0.0,0.0,3.0,0.0,0.0,0.0,0.0,4.0,0.0,4.0,3.0,4.0,0.0,2.0,0.0,0.0,0.0,2.0,0.0 };
-                */
 
-                //identifierDatasetCell = { 100.0 };
-               //identifierDatasetCellDimensionNames = { "CrossspeciesComparisonTreeDataset" };
 
                 pointValuesDatasetName = identifierDatasetName + "_Tree";
 
-                //clusterValuesDatasetName = identifierDatasetName + "_LeafNames";
-
-            }
-
-
-            /*
-            else if (checkTypeValue == "Trait")
-            {
-
-                //pointValuesDataset = mv::data().createDataset<Points>("Points", "CrossSpeciesComparisonTraitData_Values");
-                /
-                //pointValuesDatasetDatasetNumPoints = 5;
-                //pointValuesDatasetDatasetNumDimensions = 5;
-                //pointValuesDatasetDatasetDimensionNames = { "Chimpanzee","Gorilla", "Human","Marmoset","Rhesus" };
-                //clusterValuesDatasetDatasetClusterNames = { "Tail","Opposable thumbs", "Large Canines","Bipedalism","Language Skills" };
-                //pointValuesDatasetDatasetDataValues = //{ 1.0,0.0,0.0,1.0,0.0,1.0,0.0,1.0,0.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,2.0,0.0,0.0,1.0,0.0,0.0 };
-
-
-                identifierDatasetCell = { 100.0 };
-                identifierDatasetCellDimensionNames = { "CrossSpeciesComparisonTraitDataset" };
-
-                pointValuesDatasetName = identifierDatasetName + "_TraitValues";
-                clusterValuesDatasetName = identifierDatasetName + "_TraitNames";
-                //identifierDataset = mv::data().createDataset<Points>("Points", "CrossSpeciesComparisonTraitData_Identifier", pointValuesDataset);
 
 
             }
-            */
 
-            //Dataset<Points> identifierDataset = mv::data().createDataset("Points", identifierDatasetName);
+
             Dataset<Points> pointValuesDataset = mv::data().createDataset("Points", pointValuesDatasetName /*,identifierDataset*/);
-            //Dataset<Clusters>  clusterValuesDataset = mv::data().createDataset("Cluster", clusterValuesDatasetName, pointValuesDataset);
-            //events().notifyDatasetAdded(identifierDataset);
-            events().notifyDatasetAdded(pointValuesDataset);
-            //events().notifyDatasetAdded(clusterValuesDataset);
 
-            //identifierDataset->setData(identifierDatasetCell.data(), 1, 1);
-            //identifierDataset->setDimensionNames(identifierDatasetCellDimensionNames);
+            events().notifyDatasetAdded(pointValuesDataset);
+
 
             pointValuesDataset->setData(pointValuesDatasetDatasetDataValues.data(), pointValuesDatasetDatasetNumPoints, pointValuesDatasetDatasetNumDimensions);
             pointValuesDataset->setDimensionNames(pointValuesDatasetDatasetDimensionNames);
 
-            //Dataset<Clusters> clusterDataset = clusterValuesDataset->getFullDataset<Clusters>();
-            /*for (int i = 0; i < clusterValuesDatasetDatasetClusterNames.size(); i++)
-            {
-                Cluster clusterValue;
-                clusterValue.setName(clusterValuesDatasetDatasetClusterNames[i]);
-                std::vector<unsigned> indices = { static_cast<unsigned>(i) };
-                clusterValue.setIndices(indices);
-                clusterValue.setColor(QColor(Qt::gray));
-                //clusterValue.setId(clusterValuesDatasetDatasetClusterNames[i]);
-                clusterValuesDataset->addCluster(clusterValue);
-            }*/
-            //events().notifyDatasetDataChanged(identifierDataset);
-            events().notifyDatasetDataChanged(pointValuesDataset);
 
-            //events().notifyDatasetDataChanged(clusterValuesDataset);
+            events().notifyDatasetDataChanged(pointValuesDataset);
         }
         else
         {
@@ -781,9 +598,6 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
                 pointValuesDataset->setDimensionNames(pointValuesDatasetDatasetDimensionNames);
                 events().notifyDatasetDataChanged(pointValuesDataset);
 
-                ////////////////////////
-                ///
-                ///////////////////////
 
                     // Iterate through the map
 
@@ -825,48 +639,11 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
             }
         }
 
-        //else
-        //{
 
-
-
-            /*
-            qDebug() << "pointValuesDataset file loaded. Num data points: " << pointValuesDataset->getNumPoints() << " Num data dimensions: " << pointValuesDataset->getNumDimensions();
-            for (auto clusters : clusterDataset->getClusters())
-            {
-                qDebug() << "\n******\n";
-                qDebug() << clusters.getName();
-                qDebug() << clusters.getId();
-                qDebug() << clusters.getIndices();
-                qDebug() << clusters.getColor();
-                qDebug() << clusters.getNumberOfIndices();
-            }
-            */
-        //}
     }
 
 
-    //QStringList headers;
 
-    //if (hasHeaders)
-   // {
-      //  headers = _loadedData[0];
-    //}
-
-    //mv::Dataset<Points> points = mv::data().createDataset<Points>("Points", dataSetName, nullptr);
-
-    //recursiveConvertStringsToPointData(selectedDataElementType, points, _loadedData, hasHeaders);
-    //events().notifyDatasetDataChanged(points);
-    //events().notifyDatasetDataDimensionsChanged(points);
-    /*
-    if (hasHeaders)
-    {
-        std::vector<QString> dimensionNames(headers.cbegin(), headers.cend());
-        points->setDimensionNames(std::move(dimensionNames));
-    }
-    
-    qDebug() << "CSV file loaded. Name: " << dataSetName << ", num data points: " << points->getNumPoints() << ", number of dimensions: " << points->getNumDimensions() << ", has header: " << hasHeaders;
-    */
 }
 
 

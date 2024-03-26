@@ -18,10 +18,10 @@ class InputDialogCSV : public QDialog
 {
     Q_OBJECT
 public:
-    InputDialogCSV(QWidget* parent, std::string& filePath, std::string checkTypeValue);
+    InputDialogCSV(QWidget* parent, std::string& filePath, std::string checkTypeValue, QStringList headers);
 
 signals:
-    void closeDialogCSV(QString dataSetName,QString typeofData);
+    void closeDialogCSV(QString dataSetName,QString typeofData,QString leafColumn);
 
 public slots:
     void closeDialogAction();
@@ -31,7 +31,8 @@ private:
     QLineEdit* _dataNameValue;
     QLabel* messageValue;
     QPushButton* addButton;
-    QRadioButton* treeDataType;
+    QRadioButton* allDataType;
     QRadioButton* metaDataType;
     QPushButton* okButton;
+    QComboBox* _leafOptionValues;
 };
