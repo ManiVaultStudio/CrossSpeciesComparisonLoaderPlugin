@@ -21,6 +21,8 @@
 #include <limits.h>
 #include <sstream>
 #include <QFileDialog>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.CrossSpeciesComparisonLoaderPlugin")
 
@@ -284,9 +286,23 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
                 }
             }
         }
-
         //  Extract header row 
         QStringList headerRow = _loadedData[0];
+        std::map<QString, int> headerCount;
+        for (int i = 0; i < headerRow.size(); ++i) {
+            QString& header = headerRow[i];
+            if (headerCount.count(header) > 0) {
+                // If the header is already in the map, increment its count and append the count to the header
+                header = header + "_" + QString::number(++headerCount[header]);
+            }
+            else {
+                // If the header is not in the map, add it with a count of 1
+                headerCount[header] = 1;
+            }
+        }
+
+        // Update the header row in the loaded data
+        _loadedData[0] = headerRow;
         //headerRow.removeLast(); //without the last column name
         QStringList uniqueStringColumns;
         if (!_loadedData.empty())
@@ -619,6 +635,68 @@ std::pair<std::vector<int>, std::vector<int>> CrossSpeciesComparisonLoaderPlugin
 }
 
 
+std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> CrossSpeciesComparisonLoaderPlugin::getValueIndexes() {
+    std::vector<int> stringColumnIndexes;
+    std::vector<int> numericColumnIndexes;
+    std::vector<int> colorColumnIndexes;
+
+    // Get the column names
+    QStringList columnNames = _loadedData[0];
+
+    // Regular expression for hexadecimal color code
+    QRegularExpression colorRegex("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$");
+
+    // Iterate over each column
+    for (int col = 0; col < columnNames.size(); ++col) {
+        QStringList columnData;
+
+        // Gather the data for this column
+        for (int row = 1; row < _loadedData.size(); ++row) {  // Start from 1 to skip the header row
+            columnData.push_back(_loadedData[row][col]);
+        }
+
+        // Check if any values in the column are strings
+        if (std::any_of(columnData.begin(), columnData.end(), [](const QString& str) { return !isNumeric(str); })) {
+            // Check if any values in the column are colors
+            if (std::any_of(columnData.begin(), columnData.end(), [&colorRegex](const QString& str) { return colorRegex.match(str).hasMatch(); })) {
+                colorColumnIndexes.push_back(col);
+            }
+            else {
+                stringColumnIndexes.push_back(col);
+            }
+        }
+        else {  // If all values are numeric
+            numericColumnIndexes.push_back(col);
+        }
+    }
+
+    return std::make_tuple(stringColumnIndexes, numericColumnIndexes, colorColumnIndexes);
+}
+
+
+
+QJsonObject mapToJson(const std::map<QString, std::map<QString, std::map<QString, QString>>>& map) {
+    QJsonObject obj;
+    for (const auto& pair : map) {
+        QJsonObject innerObj;
+        for (const auto& innerPair : pair.second) {
+            QJsonObject innerInnerObj;
+            for (const auto& innerInnerPair : innerPair.second) {
+                innerInnerObj[innerInnerPair.first] = innerInnerPair.second;
+            }
+            innerObj[innerPair.first] = innerInnerObj;
+        }
+        obj[pair.first] = innerObj;
+    }
+    return obj;
+}
+
+// Function to convert std::map to JSON formatted string
+QString mapToJsonString(const std::map<QString, std::map<QString, std::map<QString, QString>>>& map) {
+    QJsonObject obj = mapToJson(map);
+    QJsonDocument doc(obj);
+    return doc.toJson(QJsonDocument::Compact);
+}
 void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QString typeName,QString leafColumn)
 {
 
@@ -628,7 +706,7 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
         QStringList headerColumnNames = _loadedData[0];
         if (typeName == "Normal")
         {
-            qDebug() << dataSetName;
+            //qDebug() << dataSetName;
             auto columnIndexes = getColumnIndexes();
             std::vector<int> stringColumnIndexes = columnIndexes.first;
             std::vector<int> numericColumnIndexes = columnIndexes.second;
@@ -658,7 +736,7 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
                 for (unsigned j = 0; j < stringValues.size(); ++j) {
                     clusterDetailsContainer[stringValues[j]].push_back(j);
                 }
-                Dataset<Clusters> clusterValuesDataset = mv::data().createDataset("Cluster", dataSetName + "_" + clusterDatasetName, pointValuesDataset);
+                Dataset<Clusters> clusterValuesDataset = mv::data().createDataset("Cluster", clusterDatasetName, pointValuesDataset);
                 events().notifyDatasetAdded(clusterValuesDataset);
                 for (const auto& pair : clusterDetailsContainer) {
                     Cluster cluster;
@@ -675,6 +753,72 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
         {
             qDebug() << leafColumn;
             qDebug() << dataSetName;
+            int columnNIndex=0;
+            std::map <QString, std::pair<QString, QString>> metaData;
+            for (int i = 0; i < headerColumnNames.size(); i++)
+            {
+                if (headerColumnNames[i] == leafColumn)
+                {
+                    columnNIndex=i;
+                    break;
+                }
+
+            }
+
+            std::vector<int> stringColumnIndexes, numericColumnIndexes, colorColumnIndexes;
+            std::tie(stringColumnIndexes, numericColumnIndexes, colorColumnIndexes) = getValueIndexes();
+            std::vector<QString> keyValues= extractStringColumnValues(columnNIndex);
+
+
+
+            std::map<QString, std::map<QString, std::map<QString,QString>>> metaDataMap;
+
+            for (int i = 0; i < keyValues.size(); i++)
+            {
+                
+                if (stringColumnIndexes.size() > 0) {
+                    std::map<QString, QString> tempMapInnerString;
+
+                    for (int j = 0; j < stringColumnIndexes.size(); j++)
+                    {
+
+                        tempMapInnerString[headerColumnNames[stringColumnIndexes[j]]] = _loadedData[i + 1][stringColumnIndexes[j]];
+                    }
+                    metaDataMap[keyValues[i]]["String"] = tempMapInnerString;
+                }
+
+
+                if (colorColumnIndexes.size() > 0) {
+                    std::map<QString,QString> tempMapInnerColor;
+
+                    for (int j = 0; j < colorColumnIndexes.size(); j++)
+                    {
+
+                        tempMapInnerColor[headerColumnNames[colorColumnIndexes[j]]] = _loadedData[i + 1][colorColumnIndexes[j]];
+                    }
+                    metaDataMap[keyValues[i]]["Color"] = tempMapInnerColor;
+                }
+
+                ;
+                if (numericColumnIndexes.size() > 0) {
+                    std::map<QString, QString> tempMapInnerNumeric;
+
+                    for (int j = 0; j < numericColumnIndexes.size(); j++)
+                    {
+
+                        tempMapInnerNumeric[headerColumnNames[numericColumnIndexes[j]]] = _loadedData[i + 1][numericColumnIndexes[j]];
+                    }
+                    metaDataMap[keyValues[i]]["Numeric"] = tempMapInnerNumeric;
+
+                }
+
+            }
+
+
+            QString jsonString = mapToJsonString(metaDataMap);
+            qDebug() << "JSON String:" << jsonString;
+
+
         }
 
     }
