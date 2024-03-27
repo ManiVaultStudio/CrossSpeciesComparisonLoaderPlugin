@@ -817,6 +817,33 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
 
             QString jsonString = mapToJsonString(metaDataMap);
             qDebug() << "JSON String:" << jsonString;
+            Dataset<CrossSpeciesComparisonTreeMeta> metaValuesDataset = mv::data().createDataset("CrossSpeciesComparisonTreeMeta", dataSetName);
+            events().notifyDatasetAdded(metaValuesDataset);
+
+
+            QJsonDocument doc = QJsonDocument::fromJson(jsonString.toUtf8());
+
+            if (!doc.isNull())
+            {
+                if (doc.isObject())
+                {
+                    QJsonObject jsonObj = doc.object();
+                    metaValuesDataset->setTreeMetaData(jsonObj);
+                    // Now jsonObj holds your JSON object
+                }
+                else
+                {
+                    qDebug() << "Document is not an object";
+                }
+            }
+            else
+            {
+                qDebug() << "Invalid JSON...\n" << jsonString;
+            }
+
+
+            
+
 
 
         }
