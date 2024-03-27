@@ -829,6 +829,7 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
                 {
                     QJsonObject jsonObj = doc.object();
                     metaValuesDataset->setTreeMetaData(jsonObj);
+                    events().notifyDatasetDataChanged(metaValuesDataset);
                     // Now jsonObj holds your JSON object
                 }
                 else
