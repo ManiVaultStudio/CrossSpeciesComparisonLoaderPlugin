@@ -17,12 +17,17 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath, std::stri
 
     if (checkTypeValue == "AllData")
     {
-        messageValue->setText("Please choose the option below.");
+        messageValue->setText("Please choose the option below:");
         messageValue->setStyleSheet("QLabel { color : black; font-size: 12pt; }");  // Adjust styles as needed
     }
     else if (checkTypeValue == "MetaData")
     {
         messageValue->setText("Data can can be loaded as metadata!");
+        messageValue->setStyleSheet("QLabel { color : black;  font-size: 12pt; }");  // Adjust styles as needed
+    }
+    else if (checkTypeValue == "NormalData")
+    {
+        messageValue->setText("Data can can be loaded as point and cluster data!");
         messageValue->setStyleSheet("QLabel { color : black;  font-size: 12pt; }");  // Adjust styles as needed
     }
     else
@@ -74,7 +79,7 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath, std::stri
 
     layout->addWidget(messageValue);
 
-    if (checkTypeValue == "MetaData" || checkTypeValue == "AllData")
+    if (checkTypeValue == "MetaData" || checkTypeValue == "AllData" || checkTypeValue == "NormalData")
     {
 
 
@@ -82,7 +87,7 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath, std::stri
         labelDataNameValue->setBuddy(_dataNameValue);
         layout->addWidget(labelDataNameValue.release());
         layout->addWidget(_dataNameValue);
-        if (checkTypeValue == "AllData")
+        if (checkTypeValue == "AllData" )
         {
 
             QHBoxLayout* dataTypeLayout = new QHBoxLayout();
@@ -96,12 +101,28 @@ InputDialogCSV::InputDialogCSV(QWidget* parent, std::string& filePath, std::stri
             layout->addLayout(dataTypeLayout);
 
         }
+        else if (checkTypeValue == "MetaData")
+        {
+            metaDataType->setChecked(true);
+            allDataType->setChecked(false);
+        }
+        if (checkTypeValue == "NormalData")
+        {
+            metaDataType->setChecked(false);
+            allDataType->setChecked(true);
+        }
+        else
+        {
             auto leafnamesTypeValue = new QLabel(tr("Leaf names: "));
             layout->addWidget(leafnamesTypeValue);
             layout->addWidget(_leafOptionValues);
+
+        }
+
             
         layout->addWidget(addButton);
     }
+
     else
     {
         layout->addWidget(okButton);
