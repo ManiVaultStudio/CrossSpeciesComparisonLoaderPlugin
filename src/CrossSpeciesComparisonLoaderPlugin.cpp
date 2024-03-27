@@ -283,25 +283,52 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
         //  Extract header row 
         QStringList headerRow = _loadedData[0];
         //headerRow.removeLast(); //without the last column name
-
+        QStringList uniqueStringColumns;
         if (!_loadedData.empty())
         {
 
 
-            if (hasNumericColumn(_loadedData))
+            // Create a list to store the names of columns that only contain unique string values
+            
+
+            // Iterate over each column
+            for (int col = 0; col < headerRow.size(); ++col) {
+                QStringList columnData;
+
+                // Gather the data for this column
+                for (int row = 1; row < _loadedData.size(); ++row) {  // Start from 1 to skip the header row
+                    columnData.push_back(_loadedData[row][col]);
+                }
+
+                // Check if all values in the column are strings and unique
+                if (areAllStrings(columnData) && areAllValuesUnique(columnData)) {
+                    uniqueStringColumns.push_back(headerRow[col]);
+                }
+            }
+            bool checkNumeric = hasNumericColumn(_loadedData);
+
+            if (uniqueStringColumns.count() > 0 && checkNumeric)
             {
                 checkTypeValue = "AllData";
             }
-            else
+
+            else if (uniqueStringColumns.count()>0)
             {
                 checkTypeValue = "MetaData";
             }
+
+            else if (hasNumericColumn(_loadedData))
+            {
+                checkTypeValue = "NormalData";
+            }
+
+
         }
 
 
         // Gather some knowledge about the data from the user
         auto fileNameString = fileName.toStdString();
-        InputDialogCSV inputDialog(nullptr, fileNameString, checkTypeValue, headerRow);
+        InputDialogCSV inputDialog(nullptr, fileNameString, checkTypeValue, uniqueStringColumns);
         inputDialog.setModal(true);
 
         connect(&inputDialog, &InputDialogCSV::closeDialogCSV, this, &CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV);
@@ -521,128 +548,136 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
 
     if (checkTypeValue ==  "AllData" || checkTypeValue == "MetaData")
     {
-
-
-        identifierDatasetName = dataSetName;
-
-        std::string realType= typeName.toStdString();
-
-        if(checkTypeValue == "CrossSpeciesComparisonTree" && realType == "CrossSpeciesComparisonTree")
+        if (typeName == "Normal")
         {
-            if (checkTypeValue == "CrossSpeciesComparisonTree")
+            qDebug() << dataSetName;
+        }
+        else if (typeName == "Meta")
+        {
+            qDebug() << leafColumn;
+            qDebug() << dataSetName;
+        }
+
+    }
+
+    /*
+    identifierDatasetName = dataSetName;
+
+    std::string realType= typeName.toStdString();
+
+    if(checkTypeValue == "CrossSpeciesComparisonTree" && realType == "CrossSpeciesComparisonTree")
+    {
+        if (checkTypeValue == "CrossSpeciesComparisonTree")
+        {
+
+
+
+            pointValuesDatasetName = identifierDatasetName + "_Tree";
+
+
+
+        }
+
+
+        Dataset<Points> pointValuesDataset = mv::data().createDataset("Points", pointValuesDatasetName );
+
+        events().notifyDatasetAdded(pointValuesDataset);
+
+
+        pointValuesDataset->setData(pointValuesDatasetDatasetDataValues.data(), pointValuesDatasetDatasetNumPoints, pointValuesDatasetDatasetNumDimensions);
+        pointValuesDataset->setDimensionNames(pointValuesDatasetDatasetDimensionNames);
+
+
+        events().notifyDatasetDataChanged(pointValuesDataset);
+    }
+    else
+    {
+        if (checkTypeValue == "Meta" || (checkTypeValue == "CrossSpeciesComparisonTree"))
+        {
+            _numericColumnValues.clear();
+            _stringColumnStrings.clear();
+            _columnHeaderNameValues.clear();
+            pointValuesDatasetDatasetDataValues.clear();
+
+            // Call the method to store columns
+            storeColumns(_loadedData, _numericColumnValues, _stringColumnStrings, _columnHeaderNameValues);
+
+            pointValuesDatasetName = identifierDatasetName + "_Metadata";
+
+            Dataset<Points> pointValuesDataset = mv::data().createDataset("Points", pointValuesDatasetName);
+            events().notifyDatasetAdded(pointValuesDataset);
+            pointValuesDatasetDatasetDimensionNames.clear();
+            // Iterate over the map using a range-based for loop
+            for (const auto& pair : _numericColumnValues)
             {
+                int key = pair.first;  // Access the key
 
+                if (_columnHeaderNameValues.find(key) != _columnHeaderNameValues.end()) {
+                    std::string value = _columnHeaderNameValues[key];
+                    pointValuesDatasetDatasetDimensionNames.push_back(QString::fromStdString(value));
+                }
+                else {
+                    pointValuesDatasetDatasetDimensionNames.push_back("NotAvailabe");
+                }
 
-
-                pointValuesDatasetName = identifierDatasetName + "_Tree";
-
+                const std::vector<float>& values = pair.second;  // Access the vector of floats
+                // Output vector of floats
+                for (const auto& value : values) {
+                    pointValuesDatasetDatasetDataValues.push_back(value);
+                }
 
 
             }
-
-
-            Dataset<Points> pointValuesDataset = mv::data().createDataset("Points", pointValuesDatasetName /*,identifierDataset*/);
-
-            events().notifyDatasetAdded(pointValuesDataset);
+            pointValuesDatasetDatasetNumDimensions = pointValuesDatasetDatasetDimensionNames.size();
+            pointValuesDatasetDatasetNumPoints = pointValuesDatasetDatasetDataValues.size() / pointValuesDatasetDatasetDimensionNames.size();
 
 
             pointValuesDataset->setData(pointValuesDatasetDatasetDataValues.data(), pointValuesDatasetDatasetNumPoints, pointValuesDatasetDatasetNumDimensions);
             pointValuesDataset->setDimensionNames(pointValuesDatasetDatasetDimensionNames);
-
-
             events().notifyDatasetDataChanged(pointValuesDataset);
-        }
-        else
-        {
-            if (checkTypeValue == "Meta" || (checkTypeValue == "CrossSpeciesComparisonTree"))
-            {
-                _numericColumnValues.clear();
-                _stringColumnStrings.clear();
-                _columnHeaderNameValues.clear();
-                pointValuesDatasetDatasetDataValues.clear();
 
-                // Call the method to store columns
-                storeColumns(_loadedData, _numericColumnValues, _stringColumnStrings, _columnHeaderNameValues);
 
-                pointValuesDatasetName = identifierDatasetName + "_Metadata";
+                // Iterate through the map
 
-                Dataset<Points> pointValuesDataset = mv::data().createDataset("Points", pointValuesDatasetName);
-                events().notifyDatasetAdded(pointValuesDataset);
-                pointValuesDatasetDatasetDimensionNames.clear();
-                // Iterate over the map using a range-based for loop
-                for (const auto& pair : _numericColumnValues)
+            for (const auto& pair : _stringColumnStrings) {
+
+                int key = pair.first;
+                const std::vector<std::string>& value = pair.second;
+                std::map<std::string, std::vector<unsigned>> tempClusterDetailsContainer;
+
+                if (_columnHeaderNameValues.find(key) != _columnHeaderNameValues.end()) {
+                    std::string value = _columnHeaderNameValues[key];
+                    clusterValuesDatasetName = identifierDatasetName + "_" + QString::fromStdString(value);
+                }
+                else {
+                    clusterValuesDatasetName = identifierDatasetName + "_" + "NotAvailabe";
+                }
+                Dataset<Clusters>  clusterValuesDataset = mv::data().createDataset("Cluster", clusterValuesDatasetName, pointValuesDataset);
+
+                events().notifyDatasetAdded(clusterValuesDataset);
+
+                for (unsigned i = 0; i < value.size(); ++i) {
+                    tempClusterDetailsContainer[value[i]].push_back(i);
+                }
+
+                for (const auto& pair : tempClusterDetailsContainer)
                 {
-                    int key = pair.first;  // Access the key
-
-                    if (_columnHeaderNameValues.find(key) != _columnHeaderNameValues.end()) {
-                        std::string value = _columnHeaderNameValues[key];
-                        pointValuesDatasetDatasetDimensionNames.push_back(QString::fromStdString(value));
-                    }
-                    else {
-                        pointValuesDatasetDatasetDimensionNames.push_back("NotAvailabe");
-                    }
-
-                    const std::vector<float>& values = pair.second;  // Access the vector of floats
-                    // Output vector of floats
-                    for (const auto& value : values) {
-                        pointValuesDatasetDatasetDataValues.push_back(value);
-                    }
-
-
+                    Cluster cluster;
+                    cluster.setName(QString::fromStdString(pair.first));
+                    cluster.setIndices(pair.second);
+                    cluster.setColor(QColor(Qt::gray));
+                    clusterValuesDataset->addCluster(cluster);
                 }
-                pointValuesDatasetDatasetNumDimensions = pointValuesDatasetDatasetDimensionNames.size();
-                pointValuesDatasetDatasetNumPoints = pointValuesDatasetDatasetDataValues.size() / pointValuesDatasetDatasetDimensionNames.size();
-
-
-                pointValuesDataset->setData(pointValuesDatasetDatasetDataValues.data(), pointValuesDatasetDatasetNumPoints, pointValuesDatasetDatasetNumDimensions);
-                pointValuesDataset->setDimensionNames(pointValuesDatasetDatasetDimensionNames);
-                events().notifyDatasetDataChanged(pointValuesDataset);
-
-
-                    // Iterate through the map
-
-                for (const auto& pair : _stringColumnStrings) {
-
-                    int key = pair.first;
-                    const std::vector<std::string>& value = pair.second;
-                    std::map<std::string, std::vector<unsigned>> tempClusterDetailsContainer;
-
-                    if (_columnHeaderNameValues.find(key) != _columnHeaderNameValues.end()) {
-                        std::string value = _columnHeaderNameValues[key];
-                        clusterValuesDatasetName = identifierDatasetName + "_" + QString::fromStdString(value);
-                    }
-                    else {
-                        clusterValuesDatasetName = identifierDatasetName + "_" + "NotAvailabe";
-                    }
-                    Dataset<Clusters>  clusterValuesDataset = mv::data().createDataset("Cluster", clusterValuesDatasetName, pointValuesDataset);
-
-                    events().notifyDatasetAdded(clusterValuesDataset);
-
-                    for (unsigned i = 0; i < value.size(); ++i) {
-                        tempClusterDetailsContainer[value[i]].push_back(i);
-                    }
-
-                    for (const auto& pair : tempClusterDetailsContainer)
-                    {
-                        Cluster cluster;
-                        cluster.setName(QString::fromStdString(pair.first));
-                        cluster.setIndices(pair.second);
-                        cluster.setColor(QColor(Qt::gray));
-                        clusterValuesDataset->addCluster(cluster);
-                    }
-                    events().notifyDatasetDataChanged(clusterValuesDataset);
-
-
-                }
+                events().notifyDatasetDataChanged(clusterValuesDataset);
 
 
             }
+
+
         }
-
-
     }
 
-
+    */
 
 }
 
