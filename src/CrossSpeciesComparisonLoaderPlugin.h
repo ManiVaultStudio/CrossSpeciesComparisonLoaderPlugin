@@ -31,6 +31,9 @@ public:
 public slots:
     void dialogClosedCSV(QString dataSetName, QString TypeName, QString leafColumn);
     void dialogClosedJSON(QString dataSetName, QString TypeName);
+    std::pair<std::vector<int>, std::vector<int>> getColumnIndexes();
+    std::vector<QString> extractStringColumnValues(int columnIndex);
+    std::vector<float> extractNumericColumnValues(int columnIndex);
 
 private:
     QString _dataSetName;

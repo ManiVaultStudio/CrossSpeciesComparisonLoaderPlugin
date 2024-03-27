@@ -160,7 +160,9 @@ bool areAllValuesNonEmpty(const std::vector<QStringList>& loadedData) {
 bool isNumeric(const QString& str)
 {
     bool ok;
-    str.toDouble(&ok);
+    QString copy = str;
+    copy.remove(',');
+    copy.toDouble(&ok);
     return ok;
 }
 bool hasNumericColumn(const std::vector<QStringList>& loadedData)
@@ -244,6 +246,9 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
             // Read data from the file
             while (!in.atEnd()) {
                 QString line = in.readLine();
+                QRegularExpression regex("\"([0-9]+),([0-9]+)\"");
+                line.replace(regex, "\\1\\2");
+                line.replace("\"", "");
                 QStringList tokens = line.split(",");
                 _loadedData.push_back(tokens);
             }
@@ -542,15 +547,129 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
     
 }
 
+std::vector<QString> CrossSpeciesComparisonLoaderPlugin::extractStringColumnValues(int columnIndex) {
+    std::vector<QString> columnValues;
+
+    // Check if the column index is valid
+    if (columnIndex < 0 || columnIndex >= _loadedData[0].size()) {
+        qWarning() << "Invalid column index: " << columnIndex;
+        return columnValues;
+    }
+
+    // Gather the data for this column
+    for (int row = 1; row < _loadedData.size(); ++row) {  // Start from 1 to skip the header row
+        columnValues.push_back(_loadedData[row][columnIndex]);
+    }
+
+    return columnValues;
+}
+
+std::vector<float> CrossSpeciesComparisonLoaderPlugin::extractNumericColumnValues(int columnIndex) {
+    std::vector<float> columnValues;
+
+    // Check if the column index is valid
+    if (columnIndex < 0 || columnIndex >= _loadedData[0].size()) {
+        qWarning() << "Invalid column index: " << columnIndex;
+        return columnValues;
+    }
+
+    // Gather the data for this column
+    for (int row = 1; row < _loadedData.size(); ++row) {  // Start from 1 to skip the header row
+        bool isNumeric;
+        float value = _loadedData[row][columnIndex].toFloat(&isNumeric);
+        if (isNumeric) {
+            columnValues.push_back(value);
+        }
+        else {
+            qWarning() << "Non-numeric value in numeric column: " << _loadedData[row][columnIndex];
+        }
+    }
+
+    return columnValues;
+}
+
+std::pair<std::vector<int>, std::vector<int>> CrossSpeciesComparisonLoaderPlugin::getColumnIndexes() {
+    std::vector<int> stringColumnIndexes;
+    std::vector<int> numericColumnIndexes;
+
+    // Get the column names
+    QStringList columnNames = _loadedData[0];
+
+    // Iterate over each column
+    for (int col = 0; col < columnNames.size(); ++col) {
+        QStringList columnData;
+
+        // Gather the data for this column
+        for (int row = 1; row < _loadedData.size(); ++row) {  // Start from 1 to skip the header row
+            columnData.push_back(_loadedData[row][col]);
+        }
+
+        // Check if any values in the column are strings
+        if (std::any_of(columnData.begin(), columnData.end(), [](const QString& str) { return !isNumeric(str); })) {
+            stringColumnIndexes.push_back(col);
+        }
+
+        // Check if any values in the column are numeric
+        else if (std::any_of(columnData.begin(), columnData.end(), [](const QString& str) { return isNumeric(str); })) {
+            numericColumnIndexes.push_back(col);
+        }
+    }
+
+    return std::make_pair(stringColumnIndexes, numericColumnIndexes);
+}
+
+
 void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QString typeName,QString leafColumn)
 {
 
 
     if (checkTypeValue ==  "AllData" || checkTypeValue == "MetaData")
     {
+        QStringList headerColumnNames = _loadedData[0];
         if (typeName == "Normal")
         {
             qDebug() << dataSetName;
+            auto columnIndexes = getColumnIndexes();
+            std::vector<int> stringColumnIndexes = columnIndexes.first;
+            std::vector<int> numericColumnIndexes = columnIndexes.second;
+            std::vector<int> pointData;
+            std::vector<QString>   dimensionNames;
+            for (int i = 0; i < numericColumnIndexes.size(); i++)
+            {
+                std::vector<float> numericValues = extractNumericColumnValues(numericColumnIndexes[i]);
+                for (int j = 0; j < numericValues.size(); j++)
+                {
+                    pointData.push_back(numericValues[j]);
+                }
+                dimensionNames.push_back(headerColumnNames[numericColumnIndexes[i]]);
+            }
+            Dataset<Points> pointValuesDataset = mv::data().createDataset("Points", dataSetName);
+            events().notifyDatasetAdded(pointValuesDataset);
+            pointValuesDataset->setData(pointData.data(), pointData.size() / dimensionNames.size(), dimensionNames.size());
+            pointValuesDataset->setDimensionNames(dimensionNames);
+            events().notifyDatasetDataChanged(pointValuesDataset);
+
+
+            for (int i = 0; i < stringColumnIndexes.size(); i++)
+            {
+                QString clusterDatasetName = headerColumnNames[stringColumnIndexes[i]];
+                std::vector<QString> stringValues = extractStringColumnValues(stringColumnIndexes[i]);
+                std::map<QString, std::vector<unsigned>> clusterDetailsContainer;
+                for (unsigned j = 0; j < stringValues.size(); ++j) {
+                    clusterDetailsContainer[stringValues[j]].push_back(j);
+                }
+                Dataset<Clusters> clusterValuesDataset = mv::data().createDataset("Cluster", dataSetName + "_" + clusterDatasetName, pointValuesDataset);
+                events().notifyDatasetAdded(clusterValuesDataset);
+                for (const auto& pair : clusterDetailsContainer) {
+                    Cluster cluster;
+                    cluster.setName(pair.first);
+                    cluster.setIndices(pair.second);
+                    cluster.setColor(QColor(Qt::gray));
+                    clusterValuesDataset->addCluster(cluster);
+                }
+                events().notifyDatasetDataChanged(clusterValuesDataset);
+            }
+
         }
         else if (typeName == "Meta")
         {
