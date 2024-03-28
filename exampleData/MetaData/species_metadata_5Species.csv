@@ -1,0 +1,6 @@
+dataset_names,species_id,species_sci,species_long,species_short,species_alt,species_taxid,species_color,phylo_order,phylo1_sci,phylo1_color,phylo2_sci,phylo2_color,human_mrca,brain_mass,body_mass,brain_res,CerebralCortex_N_n,CerebralCortex_O_n,WholeBrain_N_n,WholeBrain_O_n,lifestyle,digital_ dexterity
+human,HomSap,Homo sapiens,Human,Human,human,9606,#a6ac4b,1,Euarchonta,#a6ac4b,Hominid,#a6ac4b,0,1250.4,"65,143",0.75,16340000000,60840000000,86060000000,84610000000,other,7
+chimp,PanTro,Pan troglodytes,Chimpanzee,Chimpanzee,chimp,9598,#6f7620,2,Euarchonta,#a6ac4b,Hominid,#a6ac4b,6,354.8,"60,433",0.22,,,,,scansorial,5
+gorilla,GorGor,Gorilla gorilla gorilla,Western lowland gorilla,Gorilla,gorilla,9595,#c9e343,3,Euarchonta,#a6ac4b,Hominid,#a6ac4b,7,454.6,"120,975",0.11,,,,,other,5
+rhesus_macaque,MacMul,Macaca mulatta,Rhesus macaque,Rhesus macaque,macaque_rhesus,9544,#87ab52,4,Euarchonta,#a6ac4b,Cercopithecid,#87ab52,28,88,"4,613",0.46,1710000000,5270000000,6376160000,7162900000,scansorial,6
+marmoset,CalJac,Callithrix jacchus,Common marmoset,Marmoset,marmoset,9483,#42ae37,10,Euarchonta,#a6ac4b,Platyrrhine,#306519,39,7.7,347,0.24,244720000,395340000,635800000,590740000,scansorial,4
