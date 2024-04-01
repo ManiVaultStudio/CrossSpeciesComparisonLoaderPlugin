@@ -35,6 +35,27 @@ file(TO_CMAKE_PATH ${MV_INSTALL_DIR} MV_INSTALL_DIR)
 # -----------------------------------------------------------------------------
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
+# File compression: ZLib, a dependency for QuaZip
+if(APPLE)
+    message(STATUS "********Using brew zlib for QUAZIP *********")
+
+    find_program(BREW_BIN brew)
+    execute_process(COMMAND ${BREW_BIN} install pkg-config) 
+endif()
+
+find_package(ZLIB)
+
+if(ZLIB_FOUND)
+    message(STATUS "Using zlib version ${ZLIB_VERSION_STRING}")
+else()
+    set(ZLIB_ERROR_MSG "You need to define ZLIB_ROOT, pointing to a zlib installation")
+    if (LINUX)
+        set(ZLIB_ERROR_MSG "You need to install zlib, e.g. (on Ubuntu) apt install zlib1g")
+    endif()
+
+    message(FATAL_ERROR ${ZLIB_ERROR_MSG})
+endif()
+
 # -----------------------------------------------------------------------------
 # Source files
 # -----------------------------------------------------------------------------
@@ -49,17 +70,26 @@ set(CrossSpeciesComparisonLOADER_SOURCES
     src/InputDialogJSON.cpp
 )
 
+set(CrossSpeciesComparisonLOADER_LibUtils
+    src/libs/gzip/compress.hpp
+    src/libs/gzip/decompress.hpp
+    src/libs/gzip/config.hpp
+    src/libs/gzip/utils.hpp
+    src/libs/gzip/version.hpp
+)
+
 set(PLUGIN_MOC_HEADERS
 	src/CrossSpeciesComparisonLoaderPlugin.h
 )
 
 source_group( Plugin FILES ${CrossSpeciesComparisonLOADER_SOURCES})
+source_group( LibUtils FILES ${CrossSpeciesComparisonLOADER_LibUtils})
 
 # -----------------------------------------------------------------------------
 # CMake Target
 # -----------------------------------------------------------------------------
 # Create dynamic library for the plugin
-add_library(${CrossSpeciesComparisonLOADER} SHARED ${CrossSpeciesComparisonLOADER_SOURCES})
+add_library(${CrossSpeciesComparisonLOADER} SHARED ${CrossSpeciesComparisonLOADER_SOURCES} ${CrossSpeciesComparisonLOADER_LibUtils})
 
 qt_wrap_cpp(CrossSpeciesComparisonLOADER_MOC ${PLUGIN_MOC_HEADERS} TARGET ${CrossSpeciesComparisonLOADER})
 target_sources(${CrossSpeciesComparisonLOADER} PRIVATE ${CrossSpeciesComparisonLOADER_MOC})

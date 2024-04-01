@@ -8,8 +8,47 @@
 #include <QJsonArray>
 #include "CrossSpeciesComparisonTreeData.h"
 #include "CrossSpeciesComparisonTreeMetaData.h"
-using namespace mv::plugin;
 
+#include <QRandomGenerator>
+#include <QtMath>
+#include <fstream>
+#include <iostream>
+#include <set>
+using namespace mv::plugin;
+struct DataMain
+{
+    int rows;
+    int columns;
+    std::vector<float> values;
+    std::vector<std::string> dimensionNames;
+};
+
+struct SingleClusterContainer
+{
+    std::string clusterName;
+    std::string clusterColor;
+    std::vector<int> clusterIndices;
+};
+
+struct DataClusterForADataset
+{
+    std::vector<SingleClusterContainer> clusterValues;
+};
+
+struct DataPointsDerived
+{
+    int rows;
+    int columns;
+    std::vector<float> values;
+    std::vector<std::string> dimensionNames;
+};
+
+struct BinSet
+{
+    DataMain dataMain;
+    std::vector<DataClusterForADataset> dataClustersDerived;
+    std::vector<DataPointsDerived> dataPointsDerived;
+};
 // =============================================================================
 // Loader
 // =============================================================================
@@ -28,6 +67,11 @@ public:
     void init() override;
 
     void loadData() Q_DECL_OVERRIDE;
+
+    void saveBinSet(const BinSet& binSet, const std::string& filename);
+    BinSet readBinSet(const std::string& filename);
+
+
 public slots:
     void dialogClosedCSV(QString dataSetName, QString TypeName, QString leafColumn);
     void dialogClosedJSON(QString dataSetName, QString TypeName);

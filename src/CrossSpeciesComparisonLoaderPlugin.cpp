@@ -23,6 +23,9 @@
 #include <QFileDialog>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QtZlib/zlib.h>
+#include <sstream>
+
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.CrossSpeciesComparisonLoaderPlugin")
 
@@ -213,6 +216,141 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
     }
 
     return newObject;
+}
+void CrossSpeciesComparisonLoaderPlugin::saveBinSet(const BinSet& binSet, const std::string& filename) {
+    std::ostringstream oss;
+
+    // Serialize and write DataMain
+    oss << binSet.dataMain.rows << "\n";
+    oss << binSet.dataMain.columns << "\n";
+    for (const auto& value : binSet.dataMain.values) {
+        oss << value << "\n";
+    }
+    for (const auto& name : binSet.dataMain.dimensionNames) {
+        oss << name << "\n";
+    }
+
+    // Serialize and write DataClusterForADataset
+    oss << binSet.dataClustersDerived.size() << "\n";
+    for (const auto& dataCluster : binSet.dataClustersDerived) {
+        oss << dataCluster.clusterValues.size() << "\n";
+        for (const auto& singleCluster : dataCluster.clusterValues) {
+            oss << singleCluster.clusterName << "\n";
+            oss << singleCluster.clusterColor << "\n";
+            oss << singleCluster.clusterIndices.size() << "\n";
+            for (const auto& index : singleCluster.clusterIndices) {
+                oss << index << "\n";
+            }
+        }
+    }
+
+    // Serialize and write DataPointsDerived
+    oss << binSet.dataPointsDerived.size() << "\n";
+    for (const auto& dataPoint : binSet.dataPointsDerived) {
+        oss << dataPoint.rows << "\n";
+        oss << dataPoint.columns << "\n";
+        for (const auto& value : dataPoint.values) {
+            oss << value << "\n";
+        }
+        for (const auto& name : dataPoint.dimensionNames) {
+            oss << name << "\n";
+        }
+    }
+
+    std::string uncompressedData = oss.str();
+
+    uLongf compressedDataSize = compressBound(uncompressedData.size());
+    std::vector<char> compressedData(compressedDataSize);
+    if (compress((Bytef*)compressedData.data(), &compressedDataSize, (const Bytef*)uncompressedData.data(), uncompressedData.size()) != Z_OK) {
+        std::cerr << "Failed to compress data" << std::endl;
+        return;
+    }
+
+    compressedData.resize(compressedDataSize); // Resize to actual compressed size
+
+    std::ofstream outFile(filename, std::ios::binary);
+    if (!outFile) {
+        std::cerr << "File could not be opened for writing: " << filename << std::endl;
+        return;
+    }
+
+    outFile.write(compressedData.data(), compressedData.size());
+    outFile.close();
+}
+BinSet CrossSpeciesComparisonLoaderPlugin::readBinSet(const std::string& filename) {
+    std::ifstream inFile(filename, std::ios::binary);
+    if (!inFile) {
+        std::cerr << "File could not be opened for reading: " << filename << std::endl;
+        return BinSet{};
+    }
+
+    std::string compressedData((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+
+    uLongf decompressedDataSize = compressedData.size() * 10; // Estimate decompressed size
+    std::vector<char> decompressedData(decompressedDataSize);
+    if (uncompress((Bytef*)decompressedData.data(), &decompressedDataSize, (const Bytef*)compressedData.data(), compressedData.size()) != Z_OK) {
+        std::cerr << "Failed to decompress data" << std::endl;
+        return BinSet{};
+    }
+
+    decompressedData.resize(decompressedDataSize); // Resize to actual decompressed size
+
+    std::istringstream iss(std::string(decompressedData.begin(), decompressedData.end()));
+
+    BinSet binSet;
+
+    // Deserialize and read DataMain
+    iss >> binSet.dataMain.rows;
+    iss >> binSet.dataMain.columns;
+    binSet.dataMain.values.resize(binSet.dataMain.rows * binSet.dataMain.columns);
+    for (auto& value : binSet.dataMain.values) {
+        iss >> value;
+    }
+    binSet.dataMain.dimensionNames.resize(binSet.dataMain.columns);
+    for (auto& name : binSet.dataMain.dimensionNames) {
+        iss >> name;
+    }
+
+    // Deserialize and read DataClusterForADataset
+    size_t numDataClusters;
+    iss >> numDataClusters;
+    binSet.dataClustersDerived.resize(numDataClusters);
+    for (auto& dataCluster : binSet.dataClustersDerived) {
+        size_t numClusterValues;
+        iss >> numClusterValues;
+        dataCluster.clusterValues.resize(numClusterValues);
+        for (auto& singleCluster : dataCluster.clusterValues) {
+            iss >> singleCluster.clusterName;
+            iss >> singleCluster.clusterColor;
+            size_t numIndices;
+            iss >> numIndices;
+            singleCluster.clusterIndices.resize(numIndices);
+            for (auto& index : singleCluster.clusterIndices) {
+                iss >> index;
+            }
+        }
+    }
+
+    // Deserialize and read DataPointsDerived
+    size_t numDataPoints;
+    iss >> numDataPoints;
+    binSet.dataPointsDerived.resize(numDataPoints);
+    for (auto& dataPoint : binSet.dataPointsDerived) {
+        iss >> dataPoint.rows;
+        iss >> dataPoint.columns;
+        dataPoint.values.resize(dataPoint.rows * dataPoint.columns);
+        for (auto& value : dataPoint.values) {
+            iss >> value;
+        }
+        dataPoint.dimensionNames.resize(dataPoint.columns);
+        for (auto& name : dataPoint.dimensionNames) {
+            iss >> name;
+        }
+    }
+
+    inFile.close();
+
+    return binSet;
 }
 
 
