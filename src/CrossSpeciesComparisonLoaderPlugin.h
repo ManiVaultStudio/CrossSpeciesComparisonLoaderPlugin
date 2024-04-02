@@ -22,6 +22,7 @@ struct DataMain
     int columns;
     std::vector<float> values;
     std::vector<std::string> dimensionNames;
+    std::string  mainDatasetName;
 };
 
 struct SingleClusterContainer
@@ -34,6 +35,7 @@ struct SingleClusterContainer
 struct DataClusterForADataset
 {
     std::vector<SingleClusterContainer> clusterValues;
+    std::string                         derivedclusterdatasetName;
 };
 
 struct DataPointsDerived
@@ -42,6 +44,7 @@ struct DataPointsDerived
     int columns;
     std::vector<float> values;
     std::vector<std::string> dimensionNames;
+    std::string derivedpointdatasetName;
 };
 
 struct BinSet
@@ -50,6 +53,7 @@ struct BinSet
     std::vector<DataClusterForADataset> dataClustersDerived;
     std::vector<DataPointsDerived> dataPointsDerived;
 };
+
 // =============================================================================
 // Loader
 // =============================================================================

@@ -233,6 +233,7 @@ void CrossSpeciesComparisonLoaderPlugin::saveBinSet(const BinSet& binSet, const 
     for (const auto& name : binSet.dataMain.dimensionNames) {
         oss << name << "\n";
     }
+    oss << binSet.dataMain.mainDatasetName << "\n"; // Added line to serialize mainDatasetName
 
     // Serialize and write DataClusterForADataset
     oss << binSet.dataClustersDerived.size() << "\n";
@@ -246,6 +247,7 @@ void CrossSpeciesComparisonLoaderPlugin::saveBinSet(const BinSet& binSet, const 
                 oss << index << "\n";
             }
         }
+        oss << dataCluster.derivedclusterdatasetName << "\n"; // Added line to serialize derivedclusterdatasetName
     }
 
     // Serialize and write DataPointsDerived
@@ -259,6 +261,7 @@ void CrossSpeciesComparisonLoaderPlugin::saveBinSet(const BinSet& binSet, const 
         for (const auto& name : dataPoint.dimensionNames) {
             oss << name << "\n";
         }
+        oss << dataPoint.derivedpointdatasetName << "\n"; // Added line to serialize derivedpointdatasetName
     }
 
     std::string uncompressedData = oss.str();
@@ -326,6 +329,7 @@ std::pair<BinSet, QString> CrossSpeciesComparisonLoaderPlugin::readBinSet(const 
     for (auto& name : binSet.dataMain.dimensionNames) {
         std::getline(iss, name);
     }
+    std::getline(iss, binSet.dataMain.mainDatasetName); // Added line to deserialize mainDatasetName
 
     // Deserialize and read DataClusterForADataset
     size_t numDataClusters;
@@ -349,6 +353,7 @@ std::pair<BinSet, QString> CrossSpeciesComparisonLoaderPlugin::readBinSet(const 
             }
             iss.ignore(); // To skip the newline character
         }
+        std::getline(iss, dataCluster.derivedclusterdatasetName); // Added line to deserialize derivedclusterdatasetName
     }
 
     // Deserialize and read DataPointsDerived
@@ -368,12 +373,15 @@ std::pair<BinSet, QString> CrossSpeciesComparisonLoaderPlugin::readBinSet(const 
         for (auto& name : dataPoint.dimensionNames) {
             std::getline(iss, name);
         }
+        std::getline(iss, dataPoint.derivedpointdatasetName); // Added line to deserialize derivedpointdatasetName
     }
 
     inFile.close();
 
     return { binSet, QString("Processed") };
 }
+
+
 
 
 void CrossSpeciesComparisonLoaderPlugin::loadData()
@@ -749,6 +757,58 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSCBIN(QString dataSetName,
         qDebug() << "First value in DataMain values: " << _binSetRead.dataMain.values[0];
         qDebug() << "First dimension name in DataMain: " << QString::fromStdString(_binSetRead.dataMain.dimensionNames[0]);
 
+        DataMain mainData= _binSetRead.dataMain;
+        std::vector<DataClusterForADataset> clusterDataContainer = _binSetRead.dataClustersDerived;
+        std::vector<DataPointsDerived> derivedPointsDataContainer= _binSetRead.dataPointsDerived;
+
+
+        //processMainData
+        int NumberOfRows= mainData.rows;
+        int mainDataNumOfDims = mainData.columns;
+        std::vector<QString> mainDataDimensionNames;
+        for (const auto& str : mainData.dimensionNames) {
+            mainDataDimensionNames.push_back(QString::fromStdString(str));
+        }
+
+        Dataset<Points> pointValuesDataset = mv::data().createDataset("Points", dataSetName);
+        events().notifyDatasetAdded(pointValuesDataset);
+        pointValuesDataset->setData(mainData.values.data(), NumberOfRows, mainData.columns);
+        pointValuesDataset->setDimensionNames(mainDataDimensionNames);
+        events().notifyDatasetDataChanged(pointValuesDataset);
+
+        //process Derived PointData
+        for (auto derivedPointsData : derivedPointsDataContainer)
+        {
+            Dataset<Points>  derivedPointsDataset = mv::data().createDataset("Points", QString::fromStdString(derivedPointsData.derivedpointdatasetName), pointValuesDataset);
+            events().notifyDatasetAdded(derivedPointsDataset);
+            derivedPointsDataset->setData(derivedPointsData.values.data(), derivedPointsData.rows, derivedPointsData.columns);
+
+            std::vector<QString> derivedDataDimensionNames;
+            for (const auto& str : derivedPointsData.dimensionNames) {
+                derivedDataDimensionNames.push_back(QString::fromStdString(str));
+            }
+            derivedPointsDataset->setDimensionNames(derivedDataDimensionNames);
+            events().notifyDatasetDataChanged(derivedPointsDataset);
+        }
+
+        //processDerivedClusterData
+        for (auto clusterDatasets : clusterDataContainer)
+        {
+            Dataset<Clusters>  clusterValuesDataset = mv::data().createDataset("Cluster", QString::fromStdString(clusterDatasets.derivedclusterdatasetName), pointValuesDataset);
+            events().notifyDatasetAdded(clusterValuesDataset);
+            
+            for (auto clusterDetails : clusterDatasets.clusterValues)
+            {
+                Cluster cluster;
+                cluster.setName(QString::fromStdString(clusterDetails.clusterName));
+                std::vector<uint32_t> indices(clusterDetails.clusterIndices.begin(), clusterDetails.clusterIndices.end());
+                cluster.setIndices(indices);
+                cluster.setColor(QColor(QString::fromStdString(clusterDetails.clusterColor)));
+                clusterValuesDataset->addCluster(cluster);
+            }
+            events().notifyDatasetDataChanged(clusterValuesDataset);
+
+        }
 
 }
 
