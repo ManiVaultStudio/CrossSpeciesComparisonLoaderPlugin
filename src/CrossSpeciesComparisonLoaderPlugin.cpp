@@ -217,9 +217,13 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
 
     return newObject;
 }
+
+
 void CrossSpeciesComparisonLoaderPlugin::saveBinSet(const BinSet& binSet, const std::string& filename) {
     std::ostringstream oss;
-
+    // Write secret signature
+    std::string secretSignature = "CrossSpeciesComparisonSaverPlugin_Signature_Verify";
+    oss << secretSignature << "\n";
     // Serialize and write DataMain
     oss << binSet.dataMain.rows << "\n";
     oss << binSet.dataMain.columns << "\n";
@@ -277,6 +281,9 @@ void CrossSpeciesComparisonLoaderPlugin::saveBinSet(const BinSet& binSet, const 
     outFile.write(compressedData.data(), compressedData.size());
     outFile.close();
 }
+
+
+
 BinSet CrossSpeciesComparisonLoaderPlugin::readBinSet(const std::string& filename) {
     std::ifstream inFile(filename, std::ios::binary);
     if (!inFile) {
@@ -297,6 +304,14 @@ BinSet CrossSpeciesComparisonLoaderPlugin::readBinSet(const std::string& filenam
 
     std::istringstream iss(std::string(decompressedData.begin(), decompressedData.end()));
 
+    // Read and check secret signature
+    std::string secretSignature;
+    std::getline(iss, secretSignature);
+    if (secretSignature != "CrossSpeciesComparisonSaverPlugin_Signature_Verify") {
+        std::cerr << "Invalid file signature: " << filename << std::endl;
+        return BinSet{};
+    }
+
     BinSet binSet;
 
     // Deserialize and read DataMain
@@ -306,34 +321,40 @@ BinSet CrossSpeciesComparisonLoaderPlugin::readBinSet(const std::string& filenam
     for (auto& value : binSet.dataMain.values) {
         iss >> value;
     }
+    iss.ignore(); // To skip the newline character
     binSet.dataMain.dimensionNames.resize(binSet.dataMain.columns);
     for (auto& name : binSet.dataMain.dimensionNames) {
-        iss >> name;
+        std::getline(iss, name);
     }
 
     // Deserialize and read DataClusterForADataset
     size_t numDataClusters;
     iss >> numDataClusters;
+    iss.ignore(); // To skip the newline character
     binSet.dataClustersDerived.resize(numDataClusters);
     for (auto& dataCluster : binSet.dataClustersDerived) {
         size_t numClusterValues;
         iss >> numClusterValues;
+        iss.ignore(); // To skip the newline character
         dataCluster.clusterValues.resize(numClusterValues);
         for (auto& singleCluster : dataCluster.clusterValues) {
-            iss >> singleCluster.clusterName;
-            iss >> singleCluster.clusterColor;
+            std::getline(iss, singleCluster.clusterName);
+            std::getline(iss, singleCluster.clusterColor);
             size_t numIndices;
             iss >> numIndices;
+            iss.ignore(); // To skip the newline character
             singleCluster.clusterIndices.resize(numIndices);
             for (auto& index : singleCluster.clusterIndices) {
                 iss >> index;
             }
+            iss.ignore(); // To skip the newline character
         }
     }
 
     // Deserialize and read DataPointsDerived
     size_t numDataPoints;
     iss >> numDataPoints;
+    iss.ignore(); // To skip the newline character
     binSet.dataPointsDerived.resize(numDataPoints);
     for (auto& dataPoint : binSet.dataPointsDerived) {
         iss >> dataPoint.rows;
@@ -342,9 +363,10 @@ BinSet CrossSpeciesComparisonLoaderPlugin::readBinSet(const std::string& filenam
         for (auto& value : dataPoint.values) {
             iss >> value;
         }
+        iss.ignore(); // To skip the newline character
         dataPoint.dimensionNames.resize(dataPoint.columns);
         for (auto& name : dataPoint.dimensionNames) {
-            iss >> name;
+            std::getline(iss, name);
         }
     }
 
