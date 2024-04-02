@@ -68,6 +68,8 @@ set(CrossSpeciesComparisonLOADER_SOURCES
     src/InputDialogCSV.cpp
 	src/InputDialogJSON.h
     src/InputDialogJSON.cpp
+	src/InputDialogCSCBIN.h
+    src/InputDialogCSCBIN.cpp
 )
 
 set(CrossSpeciesComparisonLOADER_LibUtils

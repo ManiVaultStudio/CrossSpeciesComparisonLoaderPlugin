@@ -3,6 +3,7 @@
 #include <LoaderPlugin.h>
 #include "InputDialogCSV.h"
 #include "InputDialogJSON.h"
+#include "InputDialogCSCBIN.h"
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -69,12 +70,13 @@ public:
     void loadData() Q_DECL_OVERRIDE;
 
     void saveBinSet(const BinSet& binSet, const std::string& filename);
-    BinSet readBinSet(const std::string& filename);
+    std::pair<BinSet, QString> readBinSet(const std::string& filename);
 
 
 public slots:
     void dialogClosedCSV(QString dataSetName, QString TypeName, QString leafColumn);
     void dialogClosedJSON(QString dataSetName, QString TypeName);
+    void dialogClosedCSCBIN(QString dataSetName, QString TypeName);
     std::pair<std::vector<int>, std::vector<int>> getColumnIndexes();
     std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> getValueIndexes();
     std::vector<QString> extractStringColumnValues(int columnIndex);
@@ -101,7 +103,7 @@ private:
     std::vector<float> identifierDatasetCell;
     std::vector<QString> identifierDatasetCellDimensionNames;
     QJsonObject _treeData;  
-
+    BinSet    _binSetRead;
 };
 
 
