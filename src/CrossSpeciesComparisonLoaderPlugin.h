@@ -3,12 +3,56 @@
 #include <LoaderPlugin.h>
 #include "InputDialogCSV.h"
 #include "InputDialogJSON.h"
+#include "InputDialogCSCBIN.h"
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include "CrossSpeciesComparisonTreeData.h"
 #include "CrossSpeciesComparisonTreeMetaData.h"
+
+#include <QRandomGenerator>
+#include <QtMath>
+#include <fstream>
+#include <iostream>
+#include <set>
 using namespace mv::plugin;
+struct DataMain
+{
+    int rows;
+    int columns;
+    std::vector<float> values;
+    std::vector<std::string> dimensionNames;
+    std::string  mainDatasetName;
+};
+
+struct SingleClusterContainer
+{
+    std::string clusterName;
+    std::string clusterColor;
+    std::vector<int> clusterIndices;
+};
+
+struct DataClusterForADataset
+{
+    std::vector<SingleClusterContainer> clusterValues;
+    std::string                         derivedclusterdatasetName;
+};
+
+struct DataPointsDerived
+{
+    int rows;
+    int columns;
+    std::vector<float> values;
+    std::vector<std::string> dimensionNames;
+    std::string derivedpointdatasetName;
+};
+
+struct BinSet
+{
+    DataMain dataMain;
+    std::vector<DataClusterForADataset> dataClustersDerived;
+    std::vector<DataPointsDerived> dataPointsDerived;
+};
 
 // =============================================================================
 // Loader
@@ -28,9 +72,15 @@ public:
     void init() override;
 
     void loadData() Q_DECL_OVERRIDE;
+
+    void saveBinSet(const BinSet& binSet, const std::string& filename);
+    std::pair<BinSet, QString> readBinSet(const std::string& filename);
+
+
 public slots:
     void dialogClosedCSV(QString dataSetName, QString TypeName, QString leafColumn);
     void dialogClosedJSON(QString dataSetName, QString TypeName);
+    void dialogClosedCSCBIN(QString dataSetName, QString TypeName);
     std::pair<std::vector<int>, std::vector<int>> getColumnIndexes();
     std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> getValueIndexes();
     std::vector<QString> extractStringColumnValues(int columnIndex);
@@ -57,7 +107,7 @@ private:
     std::vector<float> identifierDatasetCell;
     std::vector<QString> identifierDatasetCellDimensionNames;
     QJsonObject _treeData;  
-
+    BinSet    _binSetRead;
 };
 
 

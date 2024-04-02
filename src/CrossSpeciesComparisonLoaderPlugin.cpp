@@ -23,6 +23,9 @@
 #include <QFileDialog>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QtZlib/zlib.h>
+#include <sstream>
+
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.CrossSpeciesComparisonLoaderPlugin")
 
@@ -216,6 +219,170 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
 }
 
 
+void CrossSpeciesComparisonLoaderPlugin::saveBinSet(const BinSet& binSet, const std::string& filename) {
+    std::ostringstream oss;
+    // Write secret signature
+    std::string secretSignature = "CrossSpeciesComparisonSaverPlugin_Signature_Verify";
+    oss << secretSignature << "\n";
+    // Serialize and write DataMain
+    oss << binSet.dataMain.rows << "\n";
+    oss << binSet.dataMain.columns << "\n";
+    for (const auto& value : binSet.dataMain.values) {
+        oss << value << "\n";
+    }
+    for (const auto& name : binSet.dataMain.dimensionNames) {
+        oss << name << "\n";
+    }
+    oss << binSet.dataMain.mainDatasetName << "\n"; // Added line to serialize mainDatasetName
+
+    // Serialize and write DataClusterForADataset
+    oss << binSet.dataClustersDerived.size() << "\n";
+    for (const auto& dataCluster : binSet.dataClustersDerived) {
+        oss << dataCluster.clusterValues.size() << "\n";
+        for (const auto& singleCluster : dataCluster.clusterValues) {
+            oss << singleCluster.clusterName << "\n";
+            oss << singleCluster.clusterColor << "\n";
+            oss << singleCluster.clusterIndices.size() << "\n";
+            for (const auto& index : singleCluster.clusterIndices) {
+                oss << index << "\n";
+            }
+        }
+        oss << dataCluster.derivedclusterdatasetName << "\n"; // Added line to serialize derivedclusterdatasetName
+    }
+
+    // Serialize and write DataPointsDerived
+    oss << binSet.dataPointsDerived.size() << "\n";
+    for (const auto& dataPoint : binSet.dataPointsDerived) {
+        oss << dataPoint.rows << "\n";
+        oss << dataPoint.columns << "\n";
+        for (const auto& value : dataPoint.values) {
+            oss << value << "\n";
+        }
+        for (const auto& name : dataPoint.dimensionNames) {
+            oss << name << "\n";
+        }
+        oss << dataPoint.derivedpointdatasetName << "\n"; // Added line to serialize derivedpointdatasetName
+    }
+
+    std::string uncompressedData = oss.str();
+
+    uLongf compressedDataSize = compressBound(uncompressedData.size());
+    std::vector<char> compressedData(compressedDataSize);
+    if (compress((Bytef*)compressedData.data(), &compressedDataSize, (const Bytef*)uncompressedData.data(), uncompressedData.size()) != Z_OK) {
+        std::cerr << "Failed to compress data" << std::endl;
+        return;
+    }
+
+    compressedData.resize(compressedDataSize); // Resize to actual compressed size
+
+    std::ofstream outFile(filename, std::ios::binary);
+    if (!outFile) {
+        std::cerr << "File could not be opened for writing: " << filename << std::endl;
+        return;
+    }
+
+    outFile.write(compressedData.data(), compressedData.size());
+    outFile.close();
+}
+
+
+
+std::pair<BinSet, QString> CrossSpeciesComparisonLoaderPlugin::readBinSet(const std::string& filename) {
+    std::ifstream inFile(filename, std::ios::binary);
+    if (!inFile) {
+        std::cerr << "File could not be opened for reading: " << filename << std::endl;
+        return { BinSet{}, QString("File could not be opened for reading: %1").arg(QString::fromStdString(filename)) };
+    }
+
+    std::string compressedData((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+
+    uLongf decompressedDataSize = compressedData.size() * 10; // Estimate decompressed size
+    std::vector<char> decompressedData(decompressedDataSize);
+    if (uncompress((Bytef*)decompressedData.data(), &decompressedDataSize, (const Bytef*)compressedData.data(), compressedData.size()) != Z_OK) {
+        std::cerr << "Failed to decompress data" << std::endl;
+        return { BinSet{}, QString("Failed to decompress data: %1").arg(QString::fromStdString(filename)) };
+    }
+
+    decompressedData.resize(decompressedDataSize); // Resize to actual decompressed size
+
+    std::istringstream iss(std::string(decompressedData.begin(), decompressedData.end()));
+
+    // Read and check secret signature
+    std::string secretSignature;
+    std::getline(iss, secretSignature);
+    if (secretSignature != "CrossSpeciesComparisonSaverPlugin_Signature_Verify") {
+        std::cerr << "Invalid file signature: " << filename << std::endl;
+        return { BinSet{}, QString("Invalid file signature: %1").arg(QString::fromStdString(filename)) };
+    }
+
+    BinSet binSet;
+
+    // Deserialize and read DataMain
+    iss >> binSet.dataMain.rows;
+    iss >> binSet.dataMain.columns;
+    binSet.dataMain.values.resize(binSet.dataMain.rows * binSet.dataMain.columns);
+    for (auto& value : binSet.dataMain.values) {
+        iss >> value;
+    }
+    iss.ignore(); // To skip the newline character
+    binSet.dataMain.dimensionNames.resize(binSet.dataMain.columns);
+    for (auto& name : binSet.dataMain.dimensionNames) {
+        std::getline(iss, name);
+    }
+    std::getline(iss, binSet.dataMain.mainDatasetName); // Added line to deserialize mainDatasetName
+
+    // Deserialize and read DataClusterForADataset
+    size_t numDataClusters;
+    iss >> numDataClusters;
+    iss.ignore(); // To skip the newline character
+    binSet.dataClustersDerived.resize(numDataClusters);
+    for (auto& dataCluster : binSet.dataClustersDerived) {
+        size_t numClusterValues;
+        iss >> numClusterValues;
+        iss.ignore(); // To skip the newline character
+        dataCluster.clusterValues.resize(numClusterValues);
+        for (auto& singleCluster : dataCluster.clusterValues) {
+            std::getline(iss, singleCluster.clusterName);
+            std::getline(iss, singleCluster.clusterColor);
+            size_t numIndices;
+            iss >> numIndices;
+            iss.ignore(); // To skip the newline character
+            singleCluster.clusterIndices.resize(numIndices);
+            for (auto& index : singleCluster.clusterIndices) {
+                iss >> index;
+            }
+            iss.ignore(); // To skip the newline character
+        }
+        std::getline(iss, dataCluster.derivedclusterdatasetName); // Added line to deserialize derivedclusterdatasetName
+    }
+
+    // Deserialize and read DataPointsDerived
+    size_t numDataPoints;
+    iss >> numDataPoints;
+    iss.ignore(); // To skip the newline character
+    binSet.dataPointsDerived.resize(numDataPoints);
+    for (auto& dataPoint : binSet.dataPointsDerived) {
+        iss >> dataPoint.rows;
+        iss >> dataPoint.columns;
+        dataPoint.values.resize(dataPoint.rows * dataPoint.columns);
+        for (auto& value : dataPoint.values) {
+            iss >> value;
+        }
+        iss.ignore(); // To skip the newline character
+        dataPoint.dimensionNames.resize(dataPoint.columns);
+        for (auto& name : dataPoint.dimensionNames) {
+            std::getline(iss, name);
+        }
+        std::getline(iss, dataPoint.derivedpointdatasetName); // Added line to deserialize derivedpointdatasetName
+    }
+
+    inFile.close();
+
+    return { binSet, QString("Processed") };
+}
+
+
+
 
 void CrossSpeciesComparisonLoaderPlugin::loadData()
 {
@@ -225,193 +392,209 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
         nullptr,
         "Open File",
         "",
-        "JSON and CSV Files (*.json *.csv)"
+        "JSON, CSV and Cross Species Comparison Dataset Files (*.json *.csv *.cscbin)"
     );
     checkTypeValue = "None";
     if (fileName.isEmpty())
     {
         return;
     }
-
-    QFile file(fileName);
-
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        throw DataLoadException(fileName, "File was not found at location.");
-
-    if (fileName.endsWith(".csv")) {
-        qDebug() << "Loading CSV file: " << fileName;
-
-
-        QTextStream in(&file);
-
-        if (!file.atEnd()) {
-            // Read data from the file
-            while (!in.atEnd()) {
-                QString line = in.readLine();
-                QRegularExpression regex("\"([0-9]+),([0-9]+)\"");
-                line.replace(regex, "\\1\\2");
-                line.replace("\"", "");
-                QStringList tokens = line.split(",");
-                _loadedData.push_back(tokens);
-            }
-        }
-        else
-        {
-            throw DataLoadException(fileName, "File is empty.");
-        }
-        // Remove last empty rows
-        while (!_loadedData.empty() && _loadedData.back().isEmpty())
-        {
-            _loadedData.pop_back();
-        }
-
-        // Remove last empty columns
-        if (!_loadedData.empty())
-        {
-            int maxColumns = _loadedData[0].size();
-
-            for (int i = _loadedData.size() - 1; i >= 0; --i)
-            {
-                QStringList& row = _loadedData[i];
-
-                while (!row.isEmpty() && row.back().isEmpty())
-                {
-                    row.pop_back();
-                }
-
-                if (row.size() < maxColumns)
-                {
-                    // Add empty strings to make the row size equal to maxColumns
-                    row += QStringList(maxColumns - row.size(), "");
-                }
-            }
-        }
-        //  Extract header row 
-        QStringList headerRow = _loadedData[0];
-        std::map<QString, int> headerCount;
-        for (int i = 0; i < headerRow.size(); ++i) {
-            QString& header = headerRow[i];
-            if (headerCount.count(header) > 0) {
-                // If the header is already in the map, increment its count and append the count to the header
-                header = header + "_" + QString::number(++headerCount[header]);
-            }
-            else {
-                // If the header is not in the map, add it with a count of 1
-                headerCount[header] = 1;
-            }
-        }
-
-        // Update the header row in the loaded data
-        _loadedData[0] = headerRow;
-        //headerRow.removeLast(); //without the last column name
-        QStringList uniqueStringColumns;
-        if (!_loadedData.empty())
-        {
-
-
-            // Create a list to store the names of columns that only contain unique string values
-            
-
-            // Iterate over each column
-            for (int col = 0; col < headerRow.size(); ++col) {
-                QStringList columnData;
-
-                // Gather the data for this column
-                for (int row = 1; row < _loadedData.size(); ++row) {  // Start from 1 to skip the header row
-                    columnData.push_back(_loadedData[row][col]);
-                }
-
-                // Check if all values in the column are strings and unique
-                if (areAllStrings(columnData) && areAllValuesUnique(columnData)) {
-                    uniqueStringColumns.push_back(headerRow[col]);
-                }
-            }
-            bool checkNumeric = hasNumericColumn(_loadedData);
-
-            if (uniqueStringColumns.count() > 0 && checkNumeric)
-            {
-                checkTypeValue = "AllData";
-            }
-
-            else if (uniqueStringColumns.count()>0)
-            {
-                checkTypeValue = "MetaData";
-            }
-
-            else if (hasNumericColumn(_loadedData))
-            {
-                checkTypeValue = "NormalData";
-            }
-
-
-        }
-
-
-        // Gather some knowledge about the data from the user
-        auto fileNameString = fileName.toStdString();
-        InputDialogCSV inputDialog(nullptr, fileNameString, checkTypeValue, uniqueStringColumns);
-        inputDialog.setModal(true);
-
-        connect(&inputDialog, &InputDialogCSV::closeDialogCSV, this, &CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV);
-
-
-        int inputOk = inputDialog.exec();
-
-
-    }
-    else if (fileName.endsWith(".json")) {
-        qDebug() << "Loading JSON file: " << fileName;
-        /*
-         QString jsonInput = R"([
-   {"value1": "Human", "value2": "Chimpanzee", "cluster": "Cluster 1"},
-   {"value1": "Gorilla", "value2": "Cluster 1", "cluster": "Cluster 2"},
-   {"value1": "Rhesus", "value2": "Cluster 2", "cluster": "Cluster 3"},
-   {"value1": "Marmoset", "value2": "Cluster 3", "cluster": "Cluster 4"}
-   ])";
-               */
-        QString message = "";
+    if (fileName.endsWith(".csv") || fileName.endsWith(".json"))
+    {
         QFile file(fileName);
+
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
             throw DataLoadException(fileName, "File was not found at location.");
 
-        QByteArray jsonData = file.readAll();
-        file.close();
+        if (fileName.endsWith(".csv")) {
+            qDebug() << "Loading CSV file: " << fileName;
 
-        QJsonDocument doc = QJsonDocument::fromJson(jsonData);
 
-        if (!doc.isNull()) {
-            if (doc.isObject()) {
-                QJsonObject jsonObject= doc.object();
+            QTextStream in(&file);
 
-                int id = 1;
-                _treeData = convertJsonArray(jsonObject, id);
+            if (!file.atEnd()) {
+                // Read data from the file
+                while (!in.atEnd()) {
+                    QString line = in.readLine();
+                    QRegularExpression regex("\"([0-9]+),([0-9]+)\"");
+                    line.replace(regex, "\\1\\2");
+                    line.replace("\"", "");
+                    QStringList tokens = line.split(",");
+                    _loadedData.push_back(tokens);
+                }
+            }
+            else
+            {
+                throw DataLoadException(fileName, "File is empty.");
+            }
+            // Remove last empty rows
+            while (!_loadedData.empty() && _loadedData.back().isEmpty())
+            {
+                _loadedData.pop_back();
+            }
 
-                //std::cout << QJsonDocument(_treeData).toJson().toStdString() << std::endl;
+            // Remove last empty columns
+            if (!_loadedData.empty())
+            {
+                int maxColumns = _loadedData[0].size();
 
-                message = "Processed";
+                for (int i = _loadedData.size() - 1; i >= 0; --i)
+                {
+                    QStringList& row = _loadedData[i];
+
+                    while (!row.isEmpty() && row.back().isEmpty())
+                    {
+                        row.pop_back();
+                    }
+
+                    if (row.size() < maxColumns)
+                    {
+                        // Add empty strings to make the row size equal to maxColumns
+                        row += QStringList(maxColumns - row.size(), "");
+                    }
+                }
+            }
+            //  Extract header row 
+            QStringList headerRow = _loadedData[0];
+            std::map<QString, int> headerCount;
+            for (int i = 0; i < headerRow.size(); ++i) {
+                QString& header = headerRow[i];
+                if (headerCount.count(header) > 0) {
+                    // If the header is already in the map, increment its count and append the count to the header
+                    header = header + "_" + QString::number(++headerCount[header]);
+                }
+                else {
+                    // If the header is not in the map, add it with a count of 1
+                    headerCount[header] = 1;
+                }
+            }
+
+            // Update the header row in the loaded data
+            _loadedData[0] = headerRow;
+            //headerRow.removeLast(); //without the last column name
+            QStringList uniqueStringColumns;
+            if (!_loadedData.empty())
+            {
+
+
+                // Create a list to store the names of columns that only contain unique string values
+
+
+                // Iterate over each column
+                for (int col = 0; col < headerRow.size(); ++col) {
+                    QStringList columnData;
+
+                    // Gather the data for this column
+                    for (int row = 1; row < _loadedData.size(); ++row) {  // Start from 1 to skip the header row
+                        columnData.push_back(_loadedData[row][col]);
+                    }
+
+                    // Check if all values in the column are strings and unique
+                    if (areAllStrings(columnData) && areAllValuesUnique(columnData)) {
+                        uniqueStringColumns.push_back(headerRow[col]);
+                    }
+                }
+                bool checkNumeric = hasNumericColumn(_loadedData);
+
+                if (uniqueStringColumns.count() > 0 && checkNumeric)
+                {
+                    checkTypeValue = "AllData";
+                }
+
+                else if (uniqueStringColumns.count() > 0)
+                {
+                    checkTypeValue = "MetaData";
+                }
+
+                else if (hasNumericColumn(_loadedData))
+                {
+                    checkTypeValue = "NormalData";
+                }
+
+
+            }
+
+
+            // Gather some knowledge about the data from the user
+            auto fileNameString = fileName.toStdString();
+            InputDialogCSV inputDialog(nullptr, fileNameString, checkTypeValue, uniqueStringColumns);
+            inputDialog.setModal(true);
+
+            connect(&inputDialog, &InputDialogCSV::closeDialogCSV, this, &CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV);
+
+
+            int inputOk = inputDialog.exec();
+
+
+        }
+        else if (fileName.endsWith(".json")) {
+            qDebug() << "Loading JSON file: " << fileName;
+            /*
+             QString jsonInput = R"([
+       {"value1": "Human", "value2": "Chimpanzee", "cluster": "Cluster 1"},
+       {"value1": "Gorilla", "value2": "Cluster 1", "cluster": "Cluster 2"},
+       {"value1": "Rhesus", "value2": "Cluster 2", "cluster": "Cluster 3"},
+       {"value1": "Marmoset", "value2": "Cluster 3", "cluster": "Cluster 4"}
+       ])";
+                   */
+            QString message = "";
+            QFile file(fileName);
+            if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+                throw DataLoadException(fileName, "File was not found at location.");
+
+            QByteArray jsonData = file.readAll();
+            file.close();
+
+            QJsonDocument doc = QJsonDocument::fromJson(jsonData);
+
+            if (!doc.isNull()) {
+                if (doc.isObject()) {
+                    QJsonObject jsonObject = doc.object();
+
+                    int id = 1;
+                    _treeData = convertJsonArray(jsonObject, id);
+
+                    //std::cout << QJsonDocument(_treeData).toJson().toStdString() << std::endl;
+
+                    message = "Processed";
+                }
+                else {
+                    qDebug() << "Document is not an array";
+                    message = "Document is not an array";
+                }
             }
             else {
-                qDebug() << "Document is not an array";
-                message = "Document is not an array";
+                qDebug() << "Invalid JSON...\n" << jsonData;
+                message = "Invalid JSON...";
             }
+
+            // Gather some knowledge about the data from the user
+            auto fileNameString = fileName.toStdString();
+            //checkTypeValue = "None"; //"CrossSpeciesComparisonTree" or "Trait" or "None"
+            InputDialogJSON inputDialog(nullptr, fileNameString, message);
+            inputDialog.setModal(true);
+
+            connect(&inputDialog, &InputDialogJSON::closeDialogJSON, this, &CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON);
+
+
+            int inputOk = inputDialog.exec();
         }
-        else {
-            qDebug() << "Invalid JSON...\n" << jsonData;
-            message = "Invalid JSON...";
-        }
-    
-    // Gather some knowledge about the data from the user
+    }
+
+    else if (fileName.endsWith(".cscbin"))
+        { 
+            
     auto fileNameString = fileName.toStdString();
-    //checkTypeValue = "None"; //"CrossSpeciesComparisonTree" or "Trait" or "None"
-    InputDialogJSON inputDialog(nullptr, fileNameString, message);
+    QString message;
+    std::tie(_binSetRead, message) = readBinSet(fileNameString);
+  
+    InputDialogCSCBIN inputDialog(nullptr, fileNameString, message);
     inputDialog.setModal(true);
 
-    connect(&inputDialog, &InputDialogJSON::closeDialogJSON, this, &CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON);
-
+    connect(&inputDialog, &InputDialogCSCBIN::closeDialogCSCBIN, this, &CrossSpeciesComparisonLoaderPlugin::dialogClosedCSCBIN);
 
     int inputOk = inputDialog.exec();
-}
-
+        }
 }
 
 // Function to generate a distance matrix
@@ -561,6 +744,72 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedJSON(QString dataSetName, Q
         std::cout << '\n';
     } */
     
+}
+
+void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSCBIN(QString dataSetName, QString TypeName)
+{
+
+ 
+
+        qDebug() << "After reading:";
+        qDebug() << "DataMain rows: " << _binSetRead.dataMain.rows;
+        qDebug() << "DataMain columns: " << _binSetRead.dataMain.columns;
+        qDebug() << "First value in DataMain values: " << _binSetRead.dataMain.values[0];
+        qDebug() << "First dimension name in DataMain: " << QString::fromStdString(_binSetRead.dataMain.dimensionNames[0]);
+
+        DataMain mainData= _binSetRead.dataMain;
+        std::vector<DataClusterForADataset> clusterDataContainer = _binSetRead.dataClustersDerived;
+        std::vector<DataPointsDerived> derivedPointsDataContainer= _binSetRead.dataPointsDerived;
+
+
+        //processMainData
+        int NumberOfRows= mainData.rows;
+        int mainDataNumOfDims = mainData.columns;
+        std::vector<QString> mainDataDimensionNames;
+        for (const auto& str : mainData.dimensionNames) {
+            mainDataDimensionNames.push_back(QString::fromStdString(str));
+        }
+
+        Dataset<Points> pointValuesDataset = mv::data().createDataset("Points", dataSetName);
+        events().notifyDatasetAdded(pointValuesDataset);
+        pointValuesDataset->setData(mainData.values.data(), NumberOfRows, mainData.columns);
+        pointValuesDataset->setDimensionNames(mainDataDimensionNames);
+        events().notifyDatasetDataChanged(pointValuesDataset);
+
+        //process Derived PointData
+        for (auto derivedPointsData : derivedPointsDataContainer)
+        {
+            Dataset<Points>  derivedPointsDataset = mv::data().createDataset("Points", QString::fromStdString(derivedPointsData.derivedpointdatasetName), pointValuesDataset);
+            events().notifyDatasetAdded(derivedPointsDataset);
+            derivedPointsDataset->setData(derivedPointsData.values.data(), derivedPointsData.rows, derivedPointsData.columns);
+
+            std::vector<QString> derivedDataDimensionNames;
+            for (const auto& str : derivedPointsData.dimensionNames) {
+                derivedDataDimensionNames.push_back(QString::fromStdString(str));
+            }
+            derivedPointsDataset->setDimensionNames(derivedDataDimensionNames);
+            events().notifyDatasetDataChanged(derivedPointsDataset);
+        }
+
+        //processDerivedClusterData
+        for (auto clusterDatasets : clusterDataContainer)
+        {
+            Dataset<Clusters>  clusterValuesDataset = mv::data().createDataset("Cluster", QString::fromStdString(clusterDatasets.derivedclusterdatasetName), pointValuesDataset);
+            events().notifyDatasetAdded(clusterValuesDataset);
+            
+            for (auto clusterDetails : clusterDatasets.clusterValues)
+            {
+                Cluster cluster;
+                cluster.setName(QString::fromStdString(clusterDetails.clusterName));
+                std::vector<uint32_t> indices(clusterDetails.clusterIndices.begin(), clusterDetails.clusterIndices.end());
+                cluster.setIndices(indices);
+                cluster.setColor(QColor(QString::fromStdString(clusterDetails.clusterColor)));
+                clusterValuesDataset->addCluster(cluster);
+            }
+            events().notifyDatasetDataChanged(clusterValuesDataset);
+
+        }
+
 }
 
 std::vector<QString> CrossSpeciesComparisonLoaderPlugin::extractStringColumnValues(int columnIndex) {

@@ -1,10 +1,10 @@
-#include "InputDialogJSON.h"
+#include "InputDialogCSCBIN.h"
 #include "PointData/PointData.h"
 
-InputDialogJSON::InputDialogJSON(QWidget* parent, std::string& filePath,QString checkTypeValue) :
+InputDialogCSCBIN::InputDialogCSCBIN(QWidget* parent, std::string& filePath,QString checkTypeValue) :
     QDialog(parent)
 {
-    setWindowTitle(tr("Cross Species Comparison JSON Data Loader"));   
+    setWindowTitle(tr("Cross Species Comparison CSCBIN Data Loader"));   
     std::string fullfileName = filePath.substr(filePath.find_last_of("/\\") + 1);
     _dataNameValue = new QLineEdit();
     _dataNameValue->setText(QString::fromStdString(fullfileName.substr(0, (fullfileName.find_last_of(".")))));
@@ -17,7 +17,7 @@ InputDialogJSON::InputDialogJSON(QWidget* parent, std::string& filePath,QString 
 
     if (checkTypeValue == "Processed")
     {
-        messageValue->setText("Data can be loaded as a tree dataset! Please choose the option below to proceed.");
+        messageValue->setText("Data can be loaded! Please choose the option below to proceed.");
         messageValue->setStyleSheet("QLabel { color : black; font-size: 12pt; }");  // Adjust styles as needed
     }
     else
@@ -31,10 +31,10 @@ InputDialogJSON::InputDialogJSON(QWidget* parent, std::string& filePath,QString 
     okButton = new QPushButton(tr("close"));
     okButton->setDefault(true);
 
-    connect(okButton, &QPushButton::pressed, this, &InputDialogJSON::okDialogAction);
+    connect(okButton, &QPushButton::pressed, this, &InputDialogCSCBIN::okDialogAction);
 
-    connect(addButton, &QPushButton::pressed, this, &InputDialogJSON::closeDialogAction);
-    connect(this, &InputDialogJSON::closeDialogJSON, this, &QDialog::accept);
+    connect(addButton, &QPushButton::pressed, this, &InputDialogCSCBIN::closeDialogAction);
+    connect(this, &InputDialogCSCBIN::closeDialogCSCBIN, this, &QDialog::accept);
 
     QVBoxLayout *layout = new QVBoxLayout();
 
@@ -57,14 +57,14 @@ InputDialogJSON::InputDialogJSON(QWidget* parent, std::string& filePath,QString 
     adjustSize();
 }
 
-void InputDialogJSON::closeDialogAction()
+void InputDialogCSCBIN::closeDialogAction()
 {
 
-    emit closeDialogJSON(_dataNameValue->text(),"Done");
+    emit closeDialogCSCBIN(_dataNameValue->text(),"Done");
 }
 
 
-void InputDialogJSON::okDialogAction()
+void InputDialogCSCBIN::okDialogAction()
 {
     accept();
 }

@@ -33,7 +33,28 @@ file(TO_CMAKE_PATH ${MV_INSTALL_DIR} MV_INSTALL_DIR)
 # -----------------------------------------------------------------------------
 # Dependencies
 # -----------------------------------------------------------------------------
-find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
+find_package(Qt6 COMPONENTS Widgets WebEngineWidgets Concurrent REQUIRED)
+
+# File compression: ZLib, a dependency for QuaZip
+if(APPLE)
+    message(STATUS "********Using brew zlib for QUAZIP *********")
+
+    find_program(BREW_BIN brew)
+    execute_process(COMMAND ${BREW_BIN} install pkg-config) 
+endif()
+
+find_package(ZLIB)
+
+if(ZLIB_FOUND)
+    message(STATUS "Using zlib version ${ZLIB_VERSION_STRING}")
+else()
+    set(ZLIB_ERROR_MSG "You need to define ZLIB_ROOT, pointing to a zlib installation")
+    if (LINUX)
+        set(ZLIB_ERROR_MSG "You need to install zlib, e.g. (on Ubuntu) apt install zlib1g")
+    endif()
+
+    message(FATAL_ERROR ${ZLIB_ERROR_MSG})
+endif()
 
 # -----------------------------------------------------------------------------
 # Source files
@@ -47,6 +68,16 @@ set(CrossSpeciesComparisonLOADER_SOURCES
     src/InputDialogCSV.cpp
 	src/InputDialogJSON.h
     src/InputDialogJSON.cpp
+	src/InputDialogCSCBIN.h
+    src/InputDialogCSCBIN.cpp
+)
+
+set(CrossSpeciesComparisonLOADER_LibUtils
+    src/libs/gzip/compress.hpp
+    src/libs/gzip/decompress.hpp
+    src/libs/gzip/config.hpp
+    src/libs/gzip/utils.hpp
+    src/libs/gzip/version.hpp
 )
 
 set(PLUGIN_MOC_HEADERS
@@ -54,12 +85,13 @@ set(PLUGIN_MOC_HEADERS
 )
 
 source_group( Plugin FILES ${CrossSpeciesComparisonLOADER_SOURCES})
+source_group( LibUtils FILES ${CrossSpeciesComparisonLOADER_LibUtils})
 
 # -----------------------------------------------------------------------------
 # CMake Target
 # -----------------------------------------------------------------------------
 # Create dynamic library for the plugin
-add_library(${CrossSpeciesComparisonLOADER} SHARED ${CrossSpeciesComparisonLOADER_SOURCES})
+add_library(${CrossSpeciesComparisonLOADER} SHARED ${CrossSpeciesComparisonLOADER_SOURCES} ${CrossSpeciesComparisonLOADER_LibUtils})
 
 qt_wrap_cpp(CrossSpeciesComparisonLOADER_MOC ${PLUGIN_MOC_HEADERS} TARGET ${CrossSpeciesComparisonLOADER})
 target_sources(${CrossSpeciesComparisonLOADER} PRIVATE ${CrossSpeciesComparisonLOADER_MOC})
@@ -82,6 +114,7 @@ target_compile_features(${CrossSpeciesComparisonLOADER} PRIVATE cxx_std_17)
 # Link to Qt libraries
 target_link_libraries(${CrossSpeciesComparisonLOADER} PRIVATE Qt6::Widgets)
 target_link_libraries(${CrossSpeciesComparisonLOADER} PRIVATE Qt6::WebEngineWidgets)
+target_link_libraries(${CrossSpeciesComparisonLOADER} PRIVATE Qt6::Concurrent)
 
 # Link to ManiVault and data plugins
 # The link path in this repo assumes that the ManiVault core was built locally
