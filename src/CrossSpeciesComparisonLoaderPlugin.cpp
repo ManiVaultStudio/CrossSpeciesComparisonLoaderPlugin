@@ -779,7 +779,13 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSCBIN(QString dataSetName,
         //process Derived PointData
         for (auto derivedPointsData : derivedPointsDataContainer)
         {
-            Dataset<Points>  derivedPointsDataset = mv::data().createDataset("Points", QString::fromStdString(derivedPointsData.derivedpointdatasetName), pointValuesDataset);
+            
+            QString datasetName = "Blank";
+                if (derivedPointsData.derivedpointdatasetName!="")
+                {
+                    datasetName = QString::fromStdString(derivedPointsData.derivedpointdatasetName);
+                }
+            Dataset<Points>  derivedPointsDataset = mv::data().createDataset("Points", datasetName, pointValuesDataset);
             events().notifyDatasetAdded(derivedPointsDataset);
             derivedPointsDataset->setData(derivedPointsData.values.data(), derivedPointsData.rows, derivedPointsData.columns);
 
