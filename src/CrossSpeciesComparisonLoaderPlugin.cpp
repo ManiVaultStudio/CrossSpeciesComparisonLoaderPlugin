@@ -564,7 +564,7 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
                 }
             }
             else {
-                qDebug() << "Invalid JSON...\n" << jsonData;
+                qDebug() << "Invalid JSON...\n";// << jsonData;
                 message = "Invalid JSON...";
             }
 
@@ -1095,7 +1095,7 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
             }
             else
             {
-                qDebug() << "Invalid JSON...\n" << jsonString;
+                qDebug() << "Invalid JSON...\n";// << jsonString;
             }
 
 
