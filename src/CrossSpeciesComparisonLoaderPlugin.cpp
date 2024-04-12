@@ -564,7 +564,7 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
                 }
             }
             else {
-                qDebug() << "Invalid JSON...\n" << jsonData;
+                qDebug() << "Invalid JSON...\n";// << jsonData;
                 message = "Invalid JSON...";
             }
 
@@ -751,11 +751,12 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSCBIN(QString dataSetName,
 
  
 
-        qDebug() << "After reading:";
+       /* qDebug() << "After reading:";
         qDebug() << "DataMain rows: " << _binSetRead.dataMain.rows;
         qDebug() << "DataMain columns: " << _binSetRead.dataMain.columns;
         qDebug() << "First value in DataMain values: " << _binSetRead.dataMain.values[0];
         qDebug() << "First dimension name in DataMain: " << QString::fromStdString(_binSetRead.dataMain.dimensionNames[0]);
+        */
 
         DataMain mainData= _binSetRead.dataMain;
         std::vector<DataClusterForADataset> clusterDataContainer = _binSetRead.dataClustersDerived;
@@ -1006,8 +1007,8 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
         }
         else if (typeName == "Meta")
         {
-            qDebug() << leafColumn;
-            qDebug() << dataSetName;
+            //qDebug() << leafColumn;
+            //qDebug() << dataSetName;
             int columnNIndex=0;
             std::map <QString, std::pair<QString, QString>> metaData;
             for (int i = 0; i < headerColumnNames.size(); i++)
@@ -1071,7 +1072,7 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
 
 
             QString jsonString = mapToJsonString(metaDataMap);
-            qDebug() << "JSON String:" << jsonString;
+            //qDebug() << "JSON String:" << jsonString;
             Dataset<CrossSpeciesComparisonTreeMeta> metaValuesDataset = mv::data().createDataset("CrossSpeciesComparisonTreeMeta", dataSetName);
             events().notifyDatasetAdded(metaValuesDataset);
 
@@ -1094,7 +1095,7 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
             }
             else
             {
-                qDebug() << "Invalid JSON...\n" << jsonString;
+                qDebug() << "Invalid JSON...\n";// << jsonString;
             }
 
 
