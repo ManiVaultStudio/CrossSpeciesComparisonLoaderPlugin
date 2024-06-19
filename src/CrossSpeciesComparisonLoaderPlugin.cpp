@@ -191,9 +191,11 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
 
     if (jsonObject.contains("name")) {
         newObject["name"] = jsonObject["name"].toString();
+        newObject["branchLength"] = jsonObject.contains("branchLength") ? jsonObject["branchLength"].toDouble() : 1.0;
         newObject["color"] = "#000000";
         newObject["hastrait"] = true;
         newObject["iscollapsed"] = false;
+        newObject["mean"] = 0.0;
     }
 
     if (jsonObject.contains("children")) {
@@ -211,6 +213,7 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
         if (!jsonObject.contains("name")) {
             newObject["id"] = id++;
             newObject["score"] = 1.0;
+            newObject["branchLength"] = jsonObject.contains("branchLength") ? jsonObject["branchLength"].toDouble() : 1.0;
             newObject["width"] = 1;
         }
     }

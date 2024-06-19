@@ -1,358 +1,392 @@
 {
-    "children": [
-{
-  "children": [
-    {
-      "children": [
-        {
-          "children": [
+   "children":[
+      {
+         "children":[
             {
-              "children": [
-                {
-                  "children": [
-                    {
-                      "children": [
+               "children":[
+                  {
+                     "children":[
                         {
-                          "children": [
-                            {
-                              "children": [
-                                {
-                                  "children": [
+                           "children":[
+                              {
+                                 "children":[
                                     {
-                                      "cluster": 19,
-                                      "color": "#000000",
-                                      "hastrait": false,
-                                      "iscollapsed": false,
-                                      "name": "chimp"
+                                       "children":[
+                                          {
+                                             "children":[
+                                                {
+                                                   "children":[
+                                                      {
+                                                         "children":[
+                                                            {
+                                                               "color":"#000000",
+                                                               "hastrait":true,
+                                                               "iscollapsed":false,
+                                                               "branchLength":5.7363,
+                                                               "mean":0.24,
+                                                               "name":"chimp"
+                                                            },
+                                                            {
+                                                               "color":"#000000",
+                                                               "hastrait":true,
+                                                               "iscollapsed":false,
+                                                               "branchLength":5.7363,
+                                                               "mean":0.564,
+                                                               "name":"human"
+                                                            }
+                                                         ],
+                                                         "id":1,
+                                                         "score":1,
+                                                         "branchLength":1.3997,
+                                                         "width":1
+                                                      },
+                                                      {
+                                                         "color":"#000000",
+                                                         "hastrait":true,
+                                                         "iscollapsed":false,
+                                                         "branchLength":7.1361,
+                                                         "mean":1.80,
+                                                         "name":"gorilla"
+                                                      }
+                                                   ],
+                                                   "id":2,
+                                                   "score":1,
+                                                   "branchLength":20.7383,
+                                                   "width":1
+                                                },
+                                                {
+                                                   "children":[
+                                                      {
+                                                         "children":[
+                                                            {
+                                                               "children":[
+                                                                  {
+                                                                     "color":"#000000",
+                                                                     "hastrait":true,
+                                                                     "iscollapsed":false,
+                                                                     "branchLength":1.8457,
+                                                                     "mean":0.006,
+                                                                     "name":"rhesus_macaque"
+                                                                  },
+                                                                  {
+                                                                     "color":"#000000",
+                                                                     "hastrait":true,
+                                                                     "iscollapsed":false,
+                                                                     "branchLength":1.8457,
+                                                                     "mean":0.55,
+                                                                     "name":"macaque_nemestrina"
+                                                                  }
+                                                               ],
+                                                               "id":3,
+                                                               "score":1,
+                                                               "branchLength":4.1818,
+                                                               "width":1
+                                                            },
+                                                            {
+                                                               "color":"#000000",
+                                                               "hastrait":true,
+                                                               "iscollapsed":false,
+                                                               "branchLength":6.0275,
+                                                               "mean":0.234,
+                                                               "name":"baboon"
+                                                            }
+                                                         ],
+                                                         "id":4,
+                                                         "score":1,
+                                                         "branchLength":2.5083,
+                                                         "width":1
+                                                      },
+                                                      {
+                                                         "color":"#000000",
+                                                         "hastrait":true,
+                                                         "iscollapsed":false,
+                                                         "branchLength":8.5359,
+                                                         "mean":1.870,
+                                                         "name":"african_green_monkey"
+                                                      }
+                                                   ],
+                                                   "id":5,
+                                                   "score":1,
+                                                   "branchLength":19.3385,
+                                                   "width":1
+                                                }
+                                             ],
+                                             "id":6,
+                                             "score":1,
+                                             "branchLength":10.8321,
+                                             "width":1
+                                          },
+                                          {
+                                             "children":[
+                                                {
+                                                   "children":[
+                                                      {
+                                                         "color":"#000000",
+                                                         "hastrait":true,
+                                                         "iscollapsed":false,
+                                                         "branchLength":14.915,
+                                                         "mean":0.0876,
+                                                         "name":"south_american_squirrel_monkey"
+                                                      },
+                                                      {
+                                                         "color":"#000000",
+                                                         "hastrait":true,
+                                                         "iscollapsed":false,
+                                                         "branchLength":14.9151,
+                                                         "mean":0.0076,
+                                                         "name":"capuchin"
+                                                      }
+                                                   ],
+                                                   "id":7,
+                                                   "score":1,
+                                                   "branchLength":2.6597,
+                                                   "width":1
+                                                },
+                                                {
+                                                   "children":[
+                                                      {
+                                                         "color":"#000000",
+                                                         "hastrait":true,
+                                                         "iscollapsed":false,
+                                                         "branchLength":16.9859,
+                                                         "mean":1.440,
+                                                         "name":"marmoset"
+                                                      },
+                                                      {
+                                                         "color":"#000000",
+                                                         "hastrait":true,
+                                                         "iscollapsed":false,
+                                                         "branchLength":16.9859,
+                                                         "mean":0.543,
+                                                         "name":"owl_monkey"
+                                                      }
+                                                   ],
+                                                   "id":8,
+                                                   "score":1,
+                                                   "branchLength":0.5888,
+                                                   "width":1
+                                                }
+                                             ],
+                                             "id":9,
+                                             "score":1,
+                                             "branchLength":21.1318,
+                                             "width":1
+                                          }
+                                       ],
+                                       "id":10,
+                                       "score":1,
+                                       "branchLength":24.7761,
+                                       "width":1
                                     },
                                     {
-                                      "cluster": 20,
-                                      "color": "#000000",
-                                      "hastrait": false,
-                                      "iscollapsed": false,
-                                      "name": "human"
+                                       "children":[
+                                          {
+                                             "color":"#000000",
+                                             "hastrait":true,
+                                             "iscollapsed":false,
+                                             "branchLength":50.7455,
+                                             "mean":0.5555,
+                                             "name":"galago"
+                                          },
+                                          {
+                                             "color":"#000000",
+                                             "hastrait":true,
+                                             "iscollapsed":false,
+                                             "branchLength":50.7453,
+                                             "mean":0.3456,
+                                             "name":"gray_mouse_lemur"
+                                          }
+                                       ],
+                                       "id":11,
+                                       "score":1,
+                                       "branchLength":12.7371,
+                                       "width":1
                                     }
-                                  ],
-                                  "description": "",
-                                  "id": 10,
-                                  "score": 1,
-                                  "width": 2
-                                },
-                                {
-                                  "cluster": 20,
-                                  "color": "#000000",
-                                  "hastrait": false,
-                                  "iscollapsed": false,
-                                  "name": "gorilla"
-                                }
-                              ],
-                              "description": "",
-                              "id": 10,
-                              "score": 1,
-                              "width": 2
-                            },
-                            {
-                              "children": [
-                                {
-                                  "children": [
+                                 ],
+                                 "id":12,
+                                 "score":1,
+                                 "branchLength":15.9431,
+                                 "width":1
+                              },
+                              {
+                                 "color":"#000000",
+                                 "hastrait":true,
+                                 "iscollapsed":false,
+                                 "branchLength":79.4258,
+                                 "mean":1.80,
+                                 "name":"treeshrew"
+                              }
+                           ],
+                           "id":13,
+                           "score":1,
+                           "branchLength":2.6377,
+                           "width":1
+                        },
+                        {
+                           "children":[
+                              {
+                                 "children":[
                                     {
-                                      "children": [
-                                        {
-                                          "cluster": 19,
-                                          "color": "#000000",
-                                          "hastrait": false,
-                                          "iscollapsed": false,
-                                          "name": "rhesus_macaque"
-                                        },
-                                        {
-                                          "cluster": 20,
-                                          "color": "#000000",
-                                          "hastrait": false,
-                                          "iscollapsed": false,
-                                          "name": "macaque_nemestrina"
-                                        }
-                                      ],
-                                      "description": "",
-                                      "id": 10,
-                                      "score": 1,
-                                      "width": 2
+                                       "children":[
+                                          {
+                                             "children":[
+                                                {
+                                                   "color":"#000000",
+                                                   "hastrait":true,
+                                                   "iscollapsed":false,
+                                                   "branchLength":15.2015,
+                                                   "mean":0.00001,
+                                                   "name":"mouse"
+                                                },
+                                                {
+                                                   "color":"#000000",
+                                                   "hastrait":true,
+                                                   "iscollapsed":false,
+                                                   "branchLength":15.2015,
+                                                   "mean":0.110,
+                                                   "name":"rat"
+                                                }
+                                             ],
+                                             "id":14,
+                                             "score":1,
+                                             "branchLength":50.5322,
+                                             "width":1
+                                          },
+                                          {
+                                             "color":"#000000",
+                                             "hastrait":true,
+                                             "iscollapsed":false,
+                                             "branchLength":64.0935,
+                                             "mean":0.543,
+                                             "name":"naked_mole_rat"
+                                          }
+                                       ],
+                                       "id":15,
+                                       "score":1,
+                                       "branchLength":64.0935,
+                                       "width":1
                                     },
                                     {
-                                      "cluster": 20,
-                                      "color": "#000000",
-                                      "hastrait": false,
-                                      "iscollapsed": false,
-                                      "name": "baboon"
+                                       "color":"#000000",
+                                       "hastrait":true,
+                                       "iscollapsed":false,
+                                       "branchLength":1.64,
+                                       "mean":1.980,
+                                       "name":"arctic_ground_squirrel"
                                     }
-                                  ],
-                                  "description": "",
-                                  "id": 10,
-                                  "score": 1,
-                                  "width": 2
-                                },
-                                {
-                                  "cluster": 20,
-                                  "color": "#000000",
-                                  "hastrait": false,
-                                  "iscollapsed": false,
-                                  "name": "african_green_monkey"
-                                }
-                              ],
-                              "description": "",
-                              "id": 10,
-                              "score": 1,
-                              "width": 2
-                            }
-                          ],
-                          "description": "",
-                          "id": 10,
-                          "score": 1,
-                          "width": 2
+                                 ],
+                                 "id":16,
+                                 "score":1,
+                                 "branchLength":12.0554,
+                                 "width":1
+                              },
+                              {
+                                 "color":"#000000",
+                                 "hastrait":true,
+                                 "iscollapsed":false,
+                                 "branchLength":77.7891,
+                                 "mean":1.900,
+                                 "name":"rabbit"
+                              }
+                           ],
+                           "id":17,
+                           "score":1,
+                           "branchLength":4.2744,
+                           "width":1
+                        }
+                     ],
+                     "id":18,
+                     "score":1,
+                     "branchLength":17.1999,
+                     "width":1
+                  },
+                  {
+                     "children":[
+                        {
+                           "children":[
+                              {
+                                 "children":[
+                                    {
+                                       "color":"#000000",
+                                       "hastrait":true,
+                                       "iscollapsed":false,
+                                       "branchLength":44.9114,
+                                       "mean":0.5432,
+                                       "name":"ferret"
+                                    },
+                                    {
+                                       "color":"#000000",
+                                       "hastrait":true,
+                                       "iscollapsed":false,
+                                       "branchLength":44.9114,
+                                       "mean":6.7650,
+                                       "name":"coyote"
+                                    }
+                                 ],
+                                 "id":19,
+                                 "score":1,
+                                 "branchLength":10.0799,
+                                 "width":1
+                              },
+                              {
+                                 "color":"#000000",
+                                 "hastrait":true,
+                                 "iscollapsed":false,
+                                 "branchLength":54.9913,
+                                 "mean":0.86543,
+                                 "name":"cat"
+                              }
+                           ],
+                           "id":20,
+                           "score":1,
+                           "branchLength":29.862,
+                           "width":1
                         },
                         {
-                          "children": [
-                            {
-                              "children": [
-                                {
-                                  "cluster": 19,
-                                  "color": "#000000",
-                                  "hastrait": false,
-                                  "iscollapsed": false,
-                                  "name": "south_american_squirrel_monkey"
-                                },
-                                {
-                                  "cluster": 20,
-                                  "color": "#000000",
-                                  "hastrait": false,
-                                  "iscollapsed": false,
-                                  "name": "capuchin"
-                                }
-                              ],
-                              "description": "",
-                              "id": 10,
-                              "score": 1,
-                              "width": 2
-                            },
-                            {
-                              "children": [
-                                {
-                                  "cluster": 20,
-                                  "color": "#000000",
-                                  "hastrait": false,
-                                  "iscollapsed": false,
-                                  "name": "marmoset"
-                                },
-                                {
-                                  "cluster": 20,
-                                  "color": "#000000",
-                                  "hastrait": false,
-                                  "iscollapsed": false,
-                                  "name": "owl_monkey"
-                                }
-                              ],
-                              "description": "",
-                              "id": 10,
-                              "score": 1,
-                              "width": 2
-                            }
-                          ],
-                          "description": "",
-                          "id": 10,
-                          "score": 1,
-                          "width": 2
+                           "color":"#000000",
+                           "hastrait":true,
+                           "iscollapsed":false,
+                           "branchLength":84.8534,
+                           "mean":0.4567,
+                           "name":"pig"
                         }
-                      ],
-                      "description": "",
-                      "id": 10,
-                      "score": 1,
-                      "width": 2
-                    },
-                    {
-                      "children": [
-                        {
-                          "cluster": 19,
-                          "color": "#000000",
-                          "hastrait": false,
-                          "iscollapsed": false,
-                          "name": "galago"
-                        },
-                        {
-                          "cluster": 20,
-                          "color": "#000000",
-                          "hastrait": false,
-                          "iscollapsed": false,
-                          "name": "gray_mouse_lemur"
-                        }
-                      ],
-                      "description": "",
-                      "id": 10,
-                      "score": 1,
-                      "width": 2
-                    }
-                  ],
-                  "description": "",
-                  "id": 10,
-                  "score": 1,
-                  "width": 2
-                },
-                {
-                  "cluster": 19,
-                  "color": "#000000",
-                  "hastrait": false,
-                  "iscollapsed": false,
-                  "name": "treeshrew"
-                }
-              ],
-              "description": "",
-              "id": 10,
-              "score": 1,
-              "width": 2
+                     ],
+                     "id":21,
+                     "score":1,
+                     "branchLength":14.4099,
+                     "width":1
+                  }
+               ],
+               "id":22,
+               "score":1,
+               "branchLength":4.5413,
+               "width":1
             },
             {
-              "children": [
-                {
-                  "children": [
-                    {
-                      "children": [
-                        {
-                          "children": [
-                            {
-                              "color": "#000000",
-                              "hastrait": true,
-                              "iscollapsed": false,
-                              "name": "mouse"
-                            },
-                            {
-                              "color": "#000000",
-                              "hastrait": true,
-                              "iscollapsed": false,
-                              "name": "rat"
-                            }
-                          ],
-                          "id": 1,
-                          "score": 1,
-                          "width": 1
-                        },
-                        {
-                          "color": "#000000",
-                          "hastrait": true,
-                          "iscollapsed": false,
-                          "name": "naked_mole_rat"
-                        }
-                      ],
-                      "description": "",
-                      "id": 10,
-                      "score": 1,
-                      "width": 2
-                    },
-                    {
-                      "color": "#000000",
-                      "hastrait": true,
-                      "iscollapsed": false,
-                      "name": "arctic_ground_squirrel"
-                    }
-                  ],
-                  "description": "",
-                  "id": 10,
-                  "score": 1,
-                  "width": 2
-                },
-                {
-                  "cluster": 20,
-                  "color": "#000000",
-                  "hastrait": false,
-                  "iscollapsed": false,
-                  "name": "rabbit"
-                }
-              ],
-              "description": "",
-              "id": 10,
-              "score": 1,
-              "width": 2
+               "color":"#000000",
+               "hastrait":true,
+               "iscollapsed":false,
+               "branchLength":103.8046,
+               "mean":7.0000,
+               "name":"armadillo"
             }
-          ],
-          "id": 1,
-          "score": 1,
-          "width": 1
-        },
-            {
-              "children": [
-                {
-                  "children": [
-                    {
-                      "children": [
-                        {
-                          "color": "#000000",
-                          "hastrait": true,
-                          "iscollapsed": false,
-                          "name": "ferret"
-                        },
-                        {
-                          "color": "#000000",
-                          "hastrait": true,
-                          "iscollapsed": false,
-                          "name": "coyote"
-                        }
-                      ],
-                      "id": 1,
-                      "score": 1,
-                      "width": 1
-                    },
-                    {
-                      "color": "#000000",
-                      "hastrait": true,
-                      "iscollapsed": false,
-                      "name": "cat"
-                    }
-                  ],
-                  "description": "",
-                  "id": 10,
-                  "score": 1,
-                  "width": 2
-                },
-                {
-                  "color": "#000000",
-                  "hastrait": true,
-                  "iscollapsed": false,
-                  "name": "pig"
-                }
-              ],
-              "description": "",
-              "id": 10,
-              "score": 1,
-              "width": 2
-            }
-
-      ],
-      "description": "",
-      "id": 10,
-      "score": 1,
-      "width": 2
-    },
-    {
-      "cluster": 20,
-      "color": "#000000",
-      "hastrait": false,
-      "iscollapsed": false,
-      "name": "armadillo"
-    }
-  ],
-  "description": "",
-  "id": 10,
-  "score": 1,
-  "width": 2
-}
-,
-    {
-      "cluster": 20,
-      "color": "#000000",
-      "hastrait": false,
-      "iscollapsed": false,
-      "name": "opossum"
-    }
-],
-"description": "",
-"id": 10,
-"score": 1,
-"width": 2
+         ],
+         "id":23,
+         "score":1,
+         "branchLength":68.9951,
+         "width":1
+      },
+      {
+         "color":"#000000",
+         "hastrait":true,
+         "iscollapsed":false,
+         "branchLength":172.8,
+         "mean":0.6598,
+         "name":"opossum"
+      }
+   ],
+   "id":24,
+   "score":1,
+   "branchLength":1,
+   "width":1
 }
