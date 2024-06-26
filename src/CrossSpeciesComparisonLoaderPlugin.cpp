@@ -192,10 +192,11 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
     if (jsonObject.contains("name")) {
         newObject["name"] = jsonObject["name"].toString();
         newObject["branchLength"] = jsonObject.contains("branchLength") ? jsonObject["branchLength"].toDouble() : 1.0;
-        newObject["color"] = "#000000";
-        newObject["hastrait"] = true;
-        newObject["iscollapsed"] = false;
-        newObject["mean"] = 0.0;
+        newObject["cellCounts"] = jsonObject.contains("cellCounts") ? jsonObject["cellCounts"].toDouble() : 0.0;
+        newObject["mean"] = jsonObject.contains("mean") ? jsonObject["mean"].toDouble() : 0.0;
+        newObject["color"] = jsonObject.contains("color") ? jsonObject["color"].toString() : "#000000";
+        newObject["hastrait"] = jsonObject.contains("hastrait") ? jsonObject["hastrait"].toBool() : true;
+        newObject["iscollapsed"] = jsonObject.contains("iscollapsed") ? jsonObject["iscollapsed"].toBool() : true;
     }
 
     if (jsonObject.contains("children")) {
@@ -212,9 +213,9 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
         // If the object has a "name" field, it's a leaf node and should not have "id", "score", and "width" fields
         if (!jsonObject.contains("name")) {
             newObject["id"] = id++;
-            newObject["score"] = 1.0;
             newObject["branchLength"] = jsonObject.contains("branchLength") ? jsonObject["branchLength"].toDouble() : 1.0;
-            newObject["width"] = 1;
+            newObject["score"] = jsonObject.contains("score") ? jsonObject["score"].toDouble() : 1.0;
+            newObject["width"] = jsonObject.contains("width") ? jsonObject["width"].toDouble() : 1.0;
         }
     }
 
