@@ -78,6 +78,8 @@ set(CrossSpeciesComparisonLOADER_LibUtils
     src/libs/gzip/config.hpp
     src/libs/gzip/utils.hpp
     src/libs/gzip/version.hpp
+    src/libs/QtZlibInclude/zlib.h
+    src/libs/QtZlibInclude/zconf.h
 )
 
 set(PLUGIN_MOC_HEADERS

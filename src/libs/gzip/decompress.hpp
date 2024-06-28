@@ -1,7 +1,7 @@
 #include "config.hpp"
 
 // zlib
-#include <QtZlib/zlib.h>
+#include <src/libs/QtZlibInclude/zlib.h>
 
 // std
 #include <limits>
