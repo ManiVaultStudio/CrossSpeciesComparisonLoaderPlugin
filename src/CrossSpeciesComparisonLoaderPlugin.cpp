@@ -23,7 +23,7 @@
 #include <QFileDialog>
 #include <QJsonObject>
 #include <QJsonDocument>
-#include <QtZlib/zlib.h>
+#include <src/libs/QtZlibInclude/zlib.h>
 #include <sstream>
 
 
