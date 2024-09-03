@@ -194,6 +194,8 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
         newObject["branchLength"] = jsonObject.contains("branchLength") ? jsonObject["branchLength"].toDouble() : 1.0;
         newObject["cellCounts"] = jsonObject.contains("cellCounts") ? jsonObject["cellCounts"].toDouble() : 0.0;
         newObject["mean"] = jsonObject.contains("mean") ? jsonObject["mean"].toDouble() : 0.0;
+        newObject["differential"] = jsonObject.contains("differential") ? jsonObject["differential"].toDouble() : 0.0;
+        newObject["rank"] = jsonObject.contains("rank") ? jsonObject["rank"].toInt() : 0;
         newObject["color"] = jsonObject.contains("color") ? jsonObject["color"].toString() : "#000000";
         newObject["hastrait"] = jsonObject.contains("hastrait") ? jsonObject["hastrait"].toBool() : true;
         newObject["iscollapsed"] = jsonObject.contains("iscollapsed") ? jsonObject["iscollapsed"].toBool() : true;
