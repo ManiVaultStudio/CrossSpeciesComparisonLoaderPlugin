@@ -199,6 +199,8 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
         newObject["abundanceMiddle"] = jsonObject.contains("abundanceMiddle") ? jsonObject["abundanceMiddle"].toDouble() : 0.0;
         newObject["rank"] = jsonObject.contains("rank") ? jsonObject["rank"].toInt() : 0;
         newObject["gene"] = jsonObject.contains("gene") ? jsonObject["gene"].toString() : " ";
+        newObject["clusterName"] = jsonObject.contains("clusterName") ? jsonObject["clusterName"].toString() : " ";
+        newObject["middleAbundanceClusterName"] = jsonObject.contains("middleAbundanceClusterName") ? jsonObject["middleAbundanceClusterName"].toString() : " ";
         newObject["color"] = jsonObject.contains("color") ? jsonObject["color"].toString() : "#000000";
         newObject["hastrait"] = jsonObject.contains("hastrait") ? jsonObject["hastrait"].toBool() : true;
         newObject["iscollapsed"] = jsonObject.contains("iscollapsed") ? jsonObject["iscollapsed"].toBool() : true;
