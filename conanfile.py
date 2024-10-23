@@ -40,7 +40,7 @@ class CrossSpeciesComparisonLoaderPluginConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": True, "fPIC": True}
 
-    requires = ("CrossSpeciesComparisonTreeData/comparison_viewer_1.1@lkeb/stable")
+    requires = ("CrossSpeciesComparisonTreeData/comparison_viewer_1.1@lkeb/stable", "CrossSpeciesComparisonTreeMetaData/comparison_viewer_1.1@lkeb/stable")
         
     # Qt requirement is inherited from hdps-core
 
@@ -113,6 +113,11 @@ class CrossSpeciesComparisonLoaderPluginConan(ConanFile):
         print(f"MV_CSCTD_INSTALL_DIR: {MV_CSCTD_PATH}")
         tc.variables["MV_INSTALL_DIR"] = self.install_dir
         tc.variables["MV_CSCTD_INSTALL_DIR"] = MV_CSCTD_PATH
+
+        MV_CSCTMD_PATH = pathlib.Path(self.deps_cpp_info["CrossSpeciesComparisonTreeMetaData"].rootpath).as_posix()
+        print(f"MV_CSCTMD_INSTALL_DIR: {MV_CSCTMD_PATH}")
+        tc.variables["MV_INSTALL_DIR"] = self.install_dir
+        tc.variables["MV_CSCTMD_INSTALL_DIR"] = MV_CSCTMD_PATH
         
         tc.variables["MV_INSTALL_DIR"] = self.install_dir
 
