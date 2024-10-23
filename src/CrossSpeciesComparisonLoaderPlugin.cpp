@@ -23,7 +23,6 @@
 #include <QFileDialog>
 #include <QJsonObject>
 #include <QJsonDocument>
-#include <src/libs/QtZlibInclude/zlib.h>
 #include <sstream>
 
 
@@ -229,7 +228,7 @@ QJsonObject convertJsonArray(QJsonObject& jsonObject, int& id) {
     return newObject;
 }
 
-
+/*
 void CrossSpeciesComparisonLoaderPlugin::saveBinSet(const BinSet& binSet, const std::string& filename) {
     std::ostringstream oss;
     // Write secret signature
@@ -392,7 +391,7 @@ std::pair<BinSet, QString> CrossSpeciesComparisonLoaderPlugin::readBinSet(const 
     return { binSet, QString("Processed") };
 }
 
-
+*/
 
 
 void CrossSpeciesComparisonLoaderPlugin::loadData()
@@ -403,7 +402,7 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
         nullptr,
         "Open File",
         "",
-        "JSON, CSV and Cross Species Comparison Dataset Files (*.json *.csv *.cscbin)"
+        "JSON and CSV Files (*.json *.csv)"
     );
     checkTypeValue = "None";
     if (fileName.isEmpty())
@@ -591,7 +590,7 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
             int inputOk = inputDialog.exec();
         }
     }
-
+    /*
     else if (fileName.endsWith(".cscbin"))
         { 
             
@@ -606,6 +605,7 @@ void CrossSpeciesComparisonLoaderPlugin::loadData()
 
     int inputOk = inputDialog.exec();
         }
+        */
 }
 
 // Function to generate a distance matrix
