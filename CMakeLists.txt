@@ -68,18 +68,6 @@ set(CrossSpeciesComparisonLOADER_SOURCES
     src/InputDialogCSV.cpp
 	src/InputDialogJSON.h
     src/InputDialogJSON.cpp
-	src/InputDialogCSCBIN.h
-    src/InputDialogCSCBIN.cpp
-)
-
-set(CrossSpeciesComparisonLOADER_LibUtils
-    src/libs/gzip/compress.hpp
-    src/libs/gzip/decompress.hpp
-    src/libs/gzip/config.hpp
-    src/libs/gzip/utils.hpp
-    src/libs/gzip/version.hpp
-    src/libs/QtZlibInclude/zlib.h
-    src/libs/QtZlibInclude/zconf.h
 )
 
 set(PLUGIN_MOC_HEADERS
