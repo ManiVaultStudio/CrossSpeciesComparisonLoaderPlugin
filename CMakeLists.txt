@@ -36,25 +36,25 @@ file(TO_CMAKE_PATH ${MV_INSTALL_DIR} MV_INSTALL_DIR)
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets Concurrent REQUIRED)
 
 # File compression: ZLib, a dependency for QuaZip
-if(APPLE)
-    message(STATUS "********Using brew zlib for QUAZIP *********")
+#if(APPLE)
+#    message(STATUS "********Using brew zlib for QUAZIP *********")
 
-    find_program(BREW_BIN brew)
-    execute_process(COMMAND ${BREW_BIN} install pkg-config) 
-endif()
+#    find_program(BREW_BIN brew)
+#    execute_process(COMMAND ${BREW_BIN} install pkg-config) 
+#endif()
 
-find_package(ZLIB)
+#find_package(ZLIB)
 
-if(ZLIB_FOUND)
-    message(STATUS "Using zlib version ${ZLIB_VERSION_STRING}")
-else()
-    set(ZLIB_ERROR_MSG "You need to define ZLIB_ROOT, pointing to a zlib installation")
-    if (LINUX)
-        set(ZLIB_ERROR_MSG "You need to install zlib, e.g. (on Ubuntu) apt install zlib1g")
-    endif()
+#if(ZLIB_FOUND)
+#    message(STATUS "Using zlib version ${ZLIB_VERSION_STRING}")
+#else()
+#    set(ZLIB_ERROR_MSG "You need to define ZLIB_ROOT, pointing to a zlib installation")
+#    if (LINUX)
+#        set(ZLIB_ERROR_MSG "You need to install zlib, e.g. (on Ubuntu) apt install zlib1g")
+#    endif()
 
-    message(FATAL_ERROR ${ZLIB_ERROR_MSG})
-endif()
+#    message(FATAL_ERROR ${ZLIB_ERROR_MSG})
+#endif()
 
 # -----------------------------------------------------------------------------
 # Source files
