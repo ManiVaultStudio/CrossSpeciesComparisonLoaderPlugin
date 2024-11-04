@@ -100,15 +100,15 @@ jobs:
           #conan-cc: gcc-${{matrix.build-cversion}}
           #conan-cxx: g++-${{matrix.build-cversion}}
     
-      - name: Mac build
-        if: startsWith(matrix.os, 'macos') &&  (env.MACENABLED == 'true' || vars.ENABLE_MACOS_BUILD == 'True')
-        uses: ManiVaultStudio/github-actions/conan_linuxmac_build@main
-        with:
-          conan-compiler: ${{matrix.build-compiler}}
-          conan-compiler-version: ${{matrix.build-cversion}}
-          conan-libcxx-version: ${{matrix.build-libcxx}}
-          conan-build-type: ${{matrix.build-config}}
-          conan-build-os: ${{matrix.build-os}}
-          conan-user: ${{secrets.LKEB_UPLOAD_USER}}
-          conan-password: ${{secrets.LKEB_UPLOAD_USER_PASSWORD}}
-          conan-pem: ${{secrets.LKEB_UPLOAD_CERT_CHAIN}}
+      #- name: Mac build
+        #if: startsWith(matrix.os, 'macos') &&  (env.MACENABLED == 'true' || vars.ENABLE_MACOS_BUILD == 'True')
+        #uses: ManiVaultStudio/github-actions/conan_linuxmac_build@main
+        #with:
+          #conan-compiler: ${{matrix.build-compiler}}
+          #conan-compiler-version: ${{matrix.build-cversion}}
+          #conan-libcxx-version: ${{matrix.build-libcxx}}
+          #conan-build-type: ${{matrix.build-config}}
+          #conan-build-os: ${{matrix.build-os}}
+          #conan-user: ${{secrets.LKEB_UPLOAD_USER}}
+          #conan-password: ${{secrets.LKEB_UPLOAD_USER_PASSWORD}}
+          #conan-pem: ${{secrets.LKEB_UPLOAD_CERT_CHAIN}}
