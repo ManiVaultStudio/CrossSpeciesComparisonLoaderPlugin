@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.22)
 
 # -----------------------------------------------------------------------------
 # CrossSpeciesComparisonLoader Plugin
@@ -106,8 +106,12 @@ target_include_directories(${CrossSpeciesComparisonLOADER} PRIVATE "${MV_CSCTMD_
 # -----------------------------------------------------------------------------
 # Target properties
 # -----------------------------------------------------------------------------
-# Request C++17
-target_compile_features(${CrossSpeciesComparisonLOADER} PRIVATE cxx_std_17)
+target_compile_features(${CrossSpeciesComparisonLOADER} PRIVATE cxx_std_20)
+
+set_target_properties(${CrossSpeciesComparisonLOADER}
+    PROPERTIES
+    FOLDER LoaderPlugins
+)
 
 # -----------------------------------------------------------------------------
 # Target library linking

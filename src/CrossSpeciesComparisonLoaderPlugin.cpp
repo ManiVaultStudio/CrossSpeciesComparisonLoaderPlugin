@@ -1240,9 +1240,9 @@ void CrossSpeciesComparisonLoaderPlugin::dialogClosedCSV(QString dataSetName, QS
 }
 
 
-QIcon CrossSpeciesComparisonLoaderPluginFactory::getIcon(const QColor& color /*= Qt::black*/) const
+CrossSpeciesComparisonLoaderPluginFactory::CrossSpeciesComparisonLoaderPluginFactory()
 {
-    return mv::Application::getIconFont("FontAwesome").getIcon("upload", color);
+    setIconByName("upload");
 }
 
 CrossSpeciesComparisonLoaderPlugin* CrossSpeciesComparisonLoaderPluginFactory::produce()

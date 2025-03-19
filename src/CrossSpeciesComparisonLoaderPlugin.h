@@ -125,7 +125,6 @@ class CrossSpeciesComparisonLoaderPluginFactory : public LoaderPluginFactory
 public:
     CrossSpeciesComparisonLoaderPluginFactory(void) {}
     ~CrossSpeciesComparisonLoaderPluginFactory(void) override {}
-    QIcon getIcon(const QColor& color = Qt::black) const override;
     CrossSpeciesComparisonLoaderPlugin* produce() override;
 
     mv::DataTypes supportedDataTypes() const override;
