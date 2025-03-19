@@ -123,7 +123,7 @@ class CrossSpeciesComparisonLoaderPluginFactory : public LoaderPluginFactory
                       FILE  "CrossSpeciesComparisonLoaderPlugin.json")
     
 public:
-    CrossSpeciesComparisonLoaderPluginFactory(void) {}
+    CrossSpeciesComparisonLoaderPluginFactory(void);
     ~CrossSpeciesComparisonLoaderPluginFactory(void) override {}
     CrossSpeciesComparisonLoaderPlugin* produce() override;
 
