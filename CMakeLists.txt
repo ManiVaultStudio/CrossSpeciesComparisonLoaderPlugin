@@ -33,7 +33,7 @@ endif()
 #find_package(OpenSSL REQUIRED)
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets Concurrent REQUIRED)
 
-find_package(ManiVault COMPONENTS Core PointData ClusterData CONFIG REQUIRED)
+find_package(ManiVault COMPONENTS Core PointData ClusterData CONFIG QUIET)
 
 # -----------------------------------------------------------------------------
 # Source files
