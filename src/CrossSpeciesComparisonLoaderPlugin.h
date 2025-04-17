@@ -7,8 +7,8 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
-#include "CrossSpeciesComparisonTreeData.h"
-#include "CrossSpeciesComparisonTreeMetaData.h"
+#include "CrossSpeciesComparisonTreeData/CrossSpeciesComparisonTreeData.h"
+#include "CrossSpeciesComparisonTreeMetaData/CrossSpeciesComparisonTreeMetaData.h"
 
 #include <QRandomGenerator>
 #include <QtMath>
