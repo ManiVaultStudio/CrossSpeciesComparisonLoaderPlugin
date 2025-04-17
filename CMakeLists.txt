@@ -23,7 +23,11 @@ endif(MSVC)
 # Dependencies
 # -----------------------------------------------------------------------------
 if(NOT DEFINED MV_CSCTD_INSTALL_DIR) 
-    set(MV_CSCTD_INSTALL_DIR ${ManiVault_INSTALL_DIR} CACHE PATH "Directory where CellMorphologyData is installed")
+    set(MV_CSCTD_INSTALL_DIR ${ManiVault_INSTALL_DIR} CACHE PATH "Directory where tree data is installed")
+endif()
+
+if(NOT DEFINED MV_CSCTMD_INSTALL_DIR) 
+    set(MV_CSCTMD_INSTALL_DIR ${ManiVault_INSTALL_DIR} CACHE PATH "Directory where tree meta data is installed")
 endif()
 
 #find_package(OpenSSL REQUIRED)
@@ -64,6 +68,7 @@ add_library(${PROJECT_NAME} SHARED ${CrossSpeciesComparisonLOADER_SOURCES} ${Cro
 # Include ManiVault headers, including system data plugins
 target_include_directories(${PROJECT_NAME} PRIVATE "${ManiVault_INCLUDE_DIR}")
 target_include_directories(${PROJECT_NAME} PRIVATE "${MV_CSCTD_INSTALL_DIR}/$<CONFIGURATION>/include/")
+target_include_directories(${PROJECT_NAME} PRIVATE "${MV_CSCTMD_INSTALL_DIR}/$<CONFIGURATION>/include/")
 #target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/3rdparty/curl/include/")
 
 
@@ -89,6 +94,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Concurrent )
 set(MV_LINK_PATH "${ManiVault_INSTALL_DIR}/$<CONFIGURATION>/lib")
 set(PLUGIN_LINK_PATH "${ManiVault_INSTALL_DIR}/$<CONFIGURATION>/$<IF:$<CXX_COMPILER_ID:MSVC>,lib,Plugins>")
 set(CSCTDPLUGIN_LINK_PATH "${MV_CSCTD_INSTALL_DIR}/$<CONFIGURATION>/$<IF:$<CXX_COMPILER_ID:MSVC>,lib,Plugins>")
+set(CSCTMDPLUGIN_LINK_PATH "${MV_CSCTMD_INSTALL_DIR}/$<CONFIGURATION>/$<IF:$<CXX_COMPILER_ID:MSVC>,lib,Plugins>")
 set(MV_LINK_SUFFIX $<IF:$<CXX_COMPILER_ID:MSVC>,${CMAKE_LINK_LIBRARY_SUFFIX},${CMAKE_SHARED_LIBRARY_SUFFIX}>)
 
 set(CROSSSPECIESCOMPARISONTREEDATA_LINK_LIBRARY "${CSCTDPLUGIN_LINK_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}CrossSpeciesComparisonTreeData${MV_LINK_SUFFIX}")
