@@ -5,7 +5,8 @@ import os
 import pathlib
 import subprocess
 from rules_support import PluginBranchInfo
-
+from conans import tools
+import shutil
 
 class CrossSpeciesComparisonLoaderPluginConan(ConanFile):
     """Class to package using conan
@@ -155,6 +156,17 @@ class CrossSpeciesComparisonLoaderPluginConan(ConanFile):
                 release_dir,
             ]
         )
+
+        # Add the PDB files to the Conan package
+        if self.settings.os == "Windows":
+            print("Copying PDBs...")
+            pdb_dest = pathlib.Path(package_dir, "RelWithDebInfo", "PDBs")
+            pdb_dest.mkdir()
+            pdb_files = pdb_files = [p for p in pathlib.Path(self.build_folder).rglob('*') if p.is_file() and p.suffix.lower() == '.pdb']
+            print("PDB(s): ", pdb_files)
+            for pfile in pdb_files:
+                shutil.copy(pfile, pdb_dest)
+
         self.copy(pattern="*", src=package_dir)
 
     def package_info(self):
